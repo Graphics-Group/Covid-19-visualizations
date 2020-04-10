@@ -79,10 +79,10 @@ centers <- counties %>%
   )
 
 counties_map <- counties %>% left_join(nytmap, by = c("region", "subregion")) %>%
-  filter(region=="iowa") %>%
+  filter(region %in% c("iowa")) %>%
   arrange(order) 
 
-state <- "iowa"
+state <- c("iowa")
 counties_map %>% 
   ggplot(aes(x = long, y = lat)) +
   geom_polygon(aes(group=interaction(region, subregion), fill=doubles), colour="grey50", size=0.15) +
@@ -95,7 +95,7 @@ counties_map %>%
             ) +
   scale_colour_manual(values=c("white", "grey10"), 
                       na.value="grey10", guide=NULL) +
-  geom_polygon(aes(group=group), data = map_data("state") %>% filter(region==state), colour="grey30", fill=NA, size=0.25) +
+  geom_polygon(aes(group=group), data = map_data("state") %>% filter(region %in% state), colour="grey30", fill=NA, size=0.25) +
   ggtitle(paste0("Cases in Iowa's counties as of ", max(nyt$date)))
 ```
 
