@@ -1,0 +1,1 @@
+If you want to replicate this analysis, you will need to run the `00-Data.Rmd` file to download data, then `01-Iowa.Rmd`, etc., to run the analyses.
