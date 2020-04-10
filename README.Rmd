@@ -6,4 +6,96 @@ output: github_document
 Visualizations of the Covid-19 situation as it unfolds.
 
 Post your favorite visualizations, make sure to explain the important aspects. 
+
 Links to great visualizations are also welcome!
+
+Generally: add what you want, but if you break it you fix it :)
+
+John Hopkins and the NY Times are posting up-to-date information about the number of Covid-19 cases. 
+
+
+```{r echo=FALSE, warning = FALSE, message=FALSE}
+library(tidyverse)
+library(lubridate)
+nyt <- read.csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv", stringsAsFactors = FALSE)
+nyt$date <- ymd(nyt$date)
+logs <- data.frame(
+  x = 0:40)
+logs <- logs %>% mutate(
+  two = 1/2*log10(2)*x + 10,
+  three = 1/3*log10(2)*x + 10,
+  four = 1/4*log10(2)*x + 10,
+  week = 1/7*log10(2)*x + 10
+)
+
+
+
+nyt <- nyt %>% 
+  mutate(
+    state_county= paste0(state,"-", county)
+    ) %>%
+  group_by(state, county) %>%
+  mutate(
+    first10 = date[which(cases >=10)[1]],
+    ratio = (log10(max(cases))-1)/as.numeric(max(date)-first10),
+    doubles = findInterval(ratio, c(0, 1/7, 1/4, 1/2, 1) * log10(2), 
+                           rightmost.closed = TRUE, all.inside = FALSE,
+                           left.open = TRUE),
+    cum_cases = max(cases)
+  )
+
+nyt$doubles = factor(nyt$doubles)
+nyt$doubles = fct_lump(nyt$doubles, n = 3)
+levels(nyt$doubles) <- c("one week or more", "4 days to a week", "2 to 4 days", "fewer than 2 days")
+
+nytmap <- nyt %>% 
+  ungroup(state, county) %>% 
+  mutate(region = tolower(state),
+         subregion=tolower(county)) %>%
+  mutate(
+    subregion = ifelse(subregion=="dekalb", "de kalb", subregion),
+    subregion = gsub("\\.", "", subregion)
+  )
+
+
+counties <- map_data("county")
+centers <- counties %>%
+  group_by(region, subregion, group) %>%
+  summarize(
+    px = 0.5*(max(long)+min(long)),
+    py = 0.5*(max(lat)+min(lat))
+  ) %>%
+  ungroup(region, subregion, group) %>%
+  mutate(
+    shorts = toupper(gsub("(...).*", "\\1", subregion))
+  ) %>% 
+  left_join(
+    nytmap %>% select(region, subregion, cum_cases, ratio) %>% unique(), 
+    by = c("region", "subregion")
+  ) %>%
+  mutate(
+    shorts_cases = 
+      ifelse(is.na(cum_cases), shorts, sprintf("%s\n%d", shorts, cum_cases))
+  )
+
+counties_map <- counties %>% left_join(nytmap, by = c("region", "subregion")) %>%
+  filter(region=="iowa") %>%
+  arrange(order) 
+
+state <- "iowa"
+counties_map %>% 
+  ggplot(aes(x = long, y = lat)) +
+  geom_polygon(aes(group=interaction(region, subregion), fill=doubles), colour="grey50", size=0.15) +
+  scale_fill_brewer("Cases double in", palette="OrRd", na.value = "white") + #labels=c("one week or more", "4 days to one week", "2 to 4 days", "fewer than 2 days", NA),  ) +
+  ggthemes::theme_map() +
+  theme(legend.position = "right") +
+  geom_text(aes(x=px, y= py, label=shorts_cases, 
+                colour = I(ratio < 1/4*log10(2) | cum_cases <= 10)),   
+            size=2, data = centers %>% filter(region==state)
+            ) +
+  scale_colour_manual(values=c("white", "grey10"), 
+                      na.value="grey10", guide=NULL) +
+  geom_polygon(aes(group=group), data = map_data("state") %>% filter(region==state), colour="grey30", fill=NA, size=0.25) +
+  ggtitle(paste0("Cases in Iowa's counties as of ", max(nyt$date)))
+```
+
