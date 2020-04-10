@@ -86,7 +86,7 @@ state <- c("iowa")
 counties_map %>% 
   ggplot(aes(x = long, y = lat)) +
   geom_polygon(aes(group=interaction(region, subregion), fill=doubles), colour="grey50", size=0.15) +
-  scale_fill_brewer("Cases double in", palette="OrRd", na.value = "white") + #labels=c("one week or more", "4 days to one week", "2 to 4 days", "fewer than 2 days", NA),  ) +
+  scale_fill_brewer("Since 10th case\ncases double in", palette="OrRd", na.value = "white") + #labels=c("one week or more", "4 days to one week", "2 to 4 days", "fewer than 2 days", NA),  ) +
   ggthemes::theme_map() +
   theme(legend.position = "right") +
   geom_text(aes(x=px, y= py, label=shorts_cases, 
