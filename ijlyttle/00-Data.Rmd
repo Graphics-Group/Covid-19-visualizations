@@ -1,0 +1,40 @@
+---
+title: "Data Download"
+author: "Ian Lyttle"
+date: "`r Sys.Date()`"
+output: github_document
+---
+
+The purpose of this document is to download the datasets used.
+
+```{r}
+library("fs")
+```
+
+```{r}
+dir_create("data")
+
+dir_target <- path("data", "download")
+dir_create(dir_target)
+```
+
+```{r}
+download.file(
+  "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv",
+  path(dir_target, "us-counties.csv")
+)
+```
+
+```{r}
+download.file(
+  "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv",
+  path(dir_target, "us-states.csv")
+)
+```
+
+```{r}
+download.file(
+  "https://www.icip.iastate.edu/sites/default/files/uploads/tables/population/popest-annual.xls",
+  path(dir_target, "iowa_counties_population.xls")
+)
+```
