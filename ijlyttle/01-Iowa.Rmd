@@ -9,6 +9,8 @@ output:
 params:
   threshold_cases: 50 # for individual counties
   threshold_index_cases: 20 # for indexing FT-style charts
+  threshold_new_cases: 5
+  threshold_index_new_cases: 5
   nyt_citation: "Data from NYT, via state and local health agencies"
   iowa_citation: "Data from Iowa Community Indicators Program, via US Census Bureau"
 ---
@@ -21,7 +23,7 @@ library("readxl")
 library("USAboundaries") # also install_github("ropensci/USAboundariesData")
 library("sf")
 library("colorspace")
-library("rlang")
+library("RcppRoll")
 ```
 
 ```{r}
@@ -47,7 +49,16 @@ iowa_counties <-
   us_counties %>%
   filter(state == "Iowa") %>%
   select(date, county, cases, deaths) %>%
-  mutate(aggregation = "none") %>%
+  group_by(county) %>%
+  arrange(date) %>%
+  mutate(
+    new_cases = cases - lag(cases, default = 0),
+    new_deaths = deaths - lag(deaths, default = 0),
+    new_cases_week_avg = (cases - lag(cases, n = 7, default = 0)) / 7,
+    new_deaths_week_avg = (deaths - lag(deaths, n = 7, default = 0)) / 7,
+    aggregation = "none"
+  ) %>%
+  ungroup() %>%
   arrange(desc(date), desc(cases)) %>%
   print()
 ```
@@ -115,6 +126,10 @@ iowa_total <-
     county = factor(NA_character_, levels = counties_large),
     cases = sum(cases),
     deaths = sum(deaths),
+    new_cases = sum(new_cases),
+    new_deaths = sum(new_deaths),
+    new_cases_week_avg = sum(new_cases_week_avg),
+    new_deaths_week_avg = sum(new_deaths_week_avg),
     aggregation = "total"
   ) %>%
   arrange(desc(date)) %>%
@@ -130,6 +145,10 @@ iowa_remainder <-
     county = factor(NA_character_, levels = counties_large),
     cases = sum(cases),
     deaths = sum(deaths),
+    new_cases = sum(new_cases),
+    new_deaths = sum(new_deaths),
+    new_cases_week_avg = sum(new_cases_week_avg),
+    new_deaths_week_avg = sum(new_deaths_week_avg),
     aggregation = "remainder"
   ) %>%
   arrange(desc(date)) %>%
@@ -160,10 +179,11 @@ data_combined_index <-
   group_by(aggregation, county) %>%
   arrange(date) %>%
   mutate(
-    exceeds_threshold_cases = cases > params$threshold_index_cases,
-    index_cases = cumsum(exceeds_threshold_cases) - 1
-  ) %>%
-  filter(exceeds_threshold_cases)
+    exceeds_threshold_cases = cases >= params$threshold_index_cases,
+    index_cases = cumsum(exceeds_threshold_cases) - 1,
+    exceeds_threshold_new_cases = new_cases >= params$threshold_new_cases,
+    index_new_cases = cumsum(cumany(exceeds_threshold_new_cases)) - 1
+  ) 
 ```
 
 We combine all these datasets into a plot:
@@ -189,6 +209,32 @@ plot_cases <-
     x = NULL,
     y = "number of reported cases",
     title = "Iowa: COVID-19 cases by reporting date",
+    subtitle = "Includes counties with most reported cases, also aggregations",
+    caption = params$nyt_citation  
+  )
+```
+
+```{r}
+plot_new_cases_week_avg <- 
+  ggplot(data_combined, aes(date, new_cases_week_avg)) +
+  geom_line(aes(color = county, linetype = aggregation)) +
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = county),
+    show.legend = FALSE
+  ) +
+  scale_y_log10(sec.axis = dup_axis(name = NULL)) + 
+  scale_linetype(
+    name = "grouping", 
+    breaks = c("total", "remainder", "none"),
+    labels = c("state total", "all other counties", "county")
+  ) +
+  scale_color_discrete(breaks = counties_large) +
+  theme_bw() + 
+  labs(
+    x = NULL,
+    y = "number of new reported cases",
+    title = "Iowa: COVID-19 daily new cases (7-day rolling average) by reporting date",
     subtitle = "Includes counties with most reported cases, also aggregations",
     caption = params$nyt_citation  
   )
@@ -248,7 +294,10 @@ f_doubling <- function(data, var_index, var_number, threshold_number,
 }
 
 plot_cases_ft <- 
-  ggplot(data_combined_index, aes(index_cases, cases)) +
+  ggplot(
+    data_combined_index %>% filter(index_cases >= 0), 
+    aes(index_cases, cases)
+  ) +
   geom_line(
     data = 
       . %>% 
@@ -288,6 +337,38 @@ plot_cases_ft <-
     x = glue("days since {params$threshold_index_cases} cases"),
     y = "number of reported cases",
     title = "Iowa: COVID-19 cumulative-case trajectories",
+    subtitle = "Includes counties with most reported cases, also aggregations",
+    caption = params$nyt_citation
+  )
+```
+
+```{r}
+plot_new_cases_week_avg_ft <- 
+  ggplot(
+    data_combined_index %>% filter(index_new_cases >= 0),
+    aes(index_new_cases, new_cases_week_avg)
+  ) +
+  geom_line(aes(color = county, linetype = aggregation)) +
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = county),
+    show.legend = FALSE
+  ) +
+  scale_x_continuous(breaks = f_break) +
+  scale_y_log10(
+    sec.axis = dup_axis(name = NULL)
+  ) + 
+  scale_linetype(
+    name = "grouping", 
+    breaks = c("total", "remainder", "none"),
+    labels = c("state total", "all other counties", "county")
+  ) +
+  scale_color_discrete(breaks = counties_large) +
+  theme_bw() +
+  labs(
+    x = glue("days since {params$threshold_index_new_cases} new cases"),
+    y = "number of new reported cases",
+    title = "Iowa: COVID-19 new-case trajectories (7-day rolling average)",
     subtitle = "Includes counties with most reported cases, also aggregations",
     caption = params$nyt_citation
   )
@@ -441,7 +522,11 @@ iowa_counties_group_agg <-
   group_by(date, population_group) %>%
   summarize(
     cases = sum(cases),
-    deaths = sum(deaths)
+    deaths = sum(deaths),
+    new_cases = sum(new_cases),
+    new_deaths = sum(new_deaths),
+    new_cases_week_avg = sum(new_cases_week_avg),
+    new_deaths_week_avg = sum(new_deaths_week_avg)
   ) %>%
   ungroup()
 ```
@@ -471,18 +556,44 @@ plot_cases_group <-
 ```
 
 ```{r}
+plot_new_cases_group <- 
+  ggplot(iowa_counties_group_agg, aes(date, new_cases_week_avg)) +
+  geom_line(
+    aes(color = population_group)
+  ) +  
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = population_group),
+    show.legend = FALSE
+  ) +
+  scale_color_manual(values = group_colors) +
+  scale_y_log10(sec.axis = dup_axis(name = NULL)) + 
+  theme_bw() + 
+  labs(
+    x = NULL,
+    y = "number of new reported cases",
+    color = "group",
+    title = "Iowa: COVID-19 daily new cases (7-day rolling average) by reporting date",
+    caption = params$nyt_citation  
+  )
+```
+
+```{r}
 iowa_counties_group_agg_ft <- 
   iowa_counties_group_agg %>%
   group_by(population_group) %>%
   arrange(date) %>%
   mutate(
     exceeds_threshold_cases = cases > params$threshold_index_cases,
-    index_cases = cumsum(exceeds_threshold_cases) - 1
-  ) %>%
-  filter(exceeds_threshold_cases)
+    index_cases = cumsum(exceeds_threshold_cases) - 1,
+    exceeds_threshold_new_cases = new_cases >= params$threshold_index_new_cases,
+    index_new_cases = cumsum(cumany(exceeds_threshold_new_cases)) - 1    
+  ) 
 
 plot_cases_group_ft <-
-  ggplot(iowa_counties_group_agg_ft, aes(index_cases, cases)) +
+  ggplot(
+    iowa_counties_group_agg_ft %>% filter(exceeds_threshold_cases), 
+    aes(index_cases, cases)) +
   geom_line(
     data = 
       . %>% 
@@ -522,6 +633,31 @@ plot_cases_group_ft <-
   )
 ```
 
+```{r}
+plot_new_cases_group_ft <-
+  ggplot(
+    iowa_counties_group_agg_ft %>% filter(index_new_cases >= 0), 
+    aes(index_new_cases, new_cases_week_avg)) +
+  geom_line(aes(color = population_group)) +
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = population_group),
+    show.legend = FALSE
+  ) +
+  scale_x_continuous(breaks = f_break) +
+  scale_y_log10(
+    sec.axis = dup_axis(name = NULL)
+  ) + 
+  scale_color_manual(values = group_colors) +
+  theme_bw() +
+  labs(
+    x = glue("days since {params$threshold_index_new_cases} new cases"),
+    y = "number of new reported cases",
+    color = "group",
+    title = "Iowa: COVID-19 new-case trajectories (7-day rolling average)",
+    caption = params$nyt_citation
+  )
+```
 
 
 ## Discussion
@@ -550,6 +686,14 @@ For another view, here's an [FT-style chart](https://www.ft.com/coronavirus-late
 plot_cases_ft
 ```
 
+```{r new-cases-county}
+plot_new_cases_week_avg
+```
+
+```{r new-cases-county-ft}
+plot_new_cases_week_avg_ft
+```
+
 ```{r iowa-map}
 plot_iowa_map_group
 ```
@@ -562,6 +706,13 @@ plot_iowa_proportions
 plot_cases_group
 ```
 
+```{r new-cases-group}
+plot_new_cases_group
+```
+
 ```{r cases-group-ft}
 plot_cases_group_ft
+```
+```{r new-cases-group-ft}
+plot_new_cases_group_ft
 ```

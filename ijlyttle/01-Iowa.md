@@ -9,14 +9,14 @@ library("glue")
 library("tidyverse")
 ```
 
-    ## ── Attaching packages ──────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+    ## ── Attaching packages ────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 
     ## ✓ ggplot2 3.3.0          ✓ purrr   0.3.3     
     ## ✓ tibble  2.1.3          ✓ dplyr   0.8.4     
     ## ✓ tidyr   1.0.0          ✓ stringr 1.4.0     
     ## ✓ readr   1.3.1.9000     ✓ forcats 0.4.0
 
-    ## ── Conflicts ─────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ───────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## x dplyr::collapse() masks glue::collapse()
     ## x dplyr::filter()   masks stats::filter()
     ## x dplyr::lag()      masks stats::lag()
@@ -31,17 +31,8 @@ library("sf")
 
 ``` r
 library("colorspace")
-library("rlang")
+library("RcppRoll")
 ```
-
-    ## 
-    ## Attaching package: 'rlang'
-
-    ## The following objects are masked from 'package:purrr':
-    ## 
-    ##     %@%, as_function, flatten, flatten_chr, flatten_dbl, flatten_int,
-    ##     flatten_lgl, flatten_raw, invoke, list_along, modify, prepend,
-    ##     splice
 
 ``` r
 dir_source <- path("data", "download")
@@ -78,25 +69,35 @@ iowa_counties <-
   us_counties %>%
   filter(state == "Iowa") %>%
   select(date, county, cases, deaths) %>%
-  mutate(aggregation = "none") %>%
+  group_by(county) %>%
+  arrange(date) %>%
+  mutate(
+    new_cases = cases - lag(cases, default = 0),
+    new_deaths = deaths - lag(deaths, default = 0),
+    new_cases_week_avg = (cases - lag(cases, n = 7, default = 0)) / 7,
+    new_deaths_week_avg = (deaths - lag(deaths, n = 7, default = 0)) / 7,
+    aggregation = "none"
+  ) %>%
+  ungroup() %>%
   arrange(desc(date), desc(cases)) %>%
   print()
 ```
 
-    ## # A tibble: 1,302 x 5
-    ##    date       county     cases deaths aggregation
-    ##    <date>     <chr>      <dbl>  <dbl> <chr>      
-    ##  1 2020-04-11 Linn         235     12 none       
-    ##  2 2020-04-11 Johnson      194      2 none       
-    ##  3 2020-04-11 Polk         163      5 none       
-    ##  4 2020-04-11 Scott        111      1 none       
-    ##  5 2020-04-11 Muscatine     91      1 none       
-    ##  6 2020-04-11 Washington    79      3 none       
-    ##  7 2020-04-11 Tama          77      2 none       
-    ##  8 2020-04-11 Louisa        70      0 none       
-    ##  9 2020-04-11 Black Hawk    41      0 none       
-    ## 10 2020-04-11 Dallas        37      0 none       
-    ## # … with 1,292 more rows
+    ## # A tibble: 1,302 x 9
+    ##    date       county cases deaths new_cases new_deaths new_cases_week_…
+    ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
+    ##  1 2020-04-11 Linn     235     12        10          0           13.7  
+    ##  2 2020-04-11 Johns…   194      2         9          1           14    
+    ##  3 2020-04-11 Polk     163      5        16          0            7.71 
+    ##  4 2020-04-11 Scott    111      1        12          0           10.4  
+    ##  5 2020-04-11 Musca…    91      1        11          0            9.14 
+    ##  6 2020-04-11 Washi…    79      3         9          0            4.57 
+    ##  7 2020-04-11 Tama      77      2         7          0            6.86 
+    ##  8 2020-04-11 Louisa    70      0        14          0            9.86 
+    ##  9 2020-04-11 Black…    41      0         6          0            4.43 
+    ## 10 2020-04-11 Dallas    37      0         1          0            0.571
+    ## # … with 1,292 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ## #   aggregation <chr>
 
 Let’s have a quick look at all the counties.
 
@@ -121,20 +122,21 @@ iowa_counties_current <-
   print()
 ```
 
-    ## # A tibble: 81 x 5
-    ##    date       county     cases deaths aggregation
-    ##    <date>     <chr>      <dbl>  <dbl> <chr>      
-    ##  1 2020-04-11 Linn         235     12 none       
-    ##  2 2020-04-11 Johnson      194      2 none       
-    ##  3 2020-04-11 Polk         163      5 none       
-    ##  4 2020-04-11 Scott        111      1 none       
-    ##  5 2020-04-11 Muscatine     91      1 none       
-    ##  6 2020-04-11 Washington    79      3 none       
-    ##  7 2020-04-11 Tama          77      2 none       
-    ##  8 2020-04-11 Louisa        70      0 none       
-    ##  9 2020-04-11 Black Hawk    41      0 none       
-    ## 10 2020-04-11 Dallas        37      0 none       
-    ## # … with 71 more rows
+    ## # A tibble: 81 x 9
+    ##    date       county cases deaths new_cases new_deaths new_cases_week_…
+    ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
+    ##  1 2020-04-11 Linn     235     12        10          0           13.7  
+    ##  2 2020-04-11 Johns…   194      2         9          1           14    
+    ##  3 2020-04-11 Polk     163      5        16          0            7.71 
+    ##  4 2020-04-11 Scott    111      1        12          0           10.4  
+    ##  5 2020-04-11 Musca…    91      1        11          0            9.14 
+    ##  6 2020-04-11 Washi…    79      3         9          0            4.57 
+    ##  7 2020-04-11 Tama      77      2         7          0            6.86 
+    ##  8 2020-04-11 Louisa    70      0        14          0            9.86 
+    ##  9 2020-04-11 Black…    41      0         6          0            4.43 
+    ## 10 2020-04-11 Dallas    37      0         1          0            0.571
+    ## # … with 71 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ## #   aggregation <chr>
 
 It could be useful to see the current distribution of number of cases
 per county:
@@ -193,26 +195,31 @@ iowa_total <-
     county = factor(NA_character_, levels = counties_large),
     cases = sum(cases),
     deaths = sum(deaths),
+    new_cases = sum(new_cases),
+    new_deaths = sum(new_deaths),
+    new_cases_week_avg = sum(new_cases_week_avg),
+    new_deaths_week_avg = sum(new_deaths_week_avg),
     aggregation = "total"
   ) %>%
   arrange(desc(date)) %>%
   print()
 ```
 
-    ## # A tibble: 35 x 5
-    ##    date       county cases deaths aggregation
-    ##    <date>     <fct>  <dbl>  <dbl> <chr>      
-    ##  1 2020-04-11 <NA>    1510     34 total      
-    ##  2 2020-04-10 <NA>    1388     31 total      
-    ##  3 2020-04-09 <NA>    1270     27 total      
-    ##  4 2020-04-08 <NA>    1145     27 total      
-    ##  5 2020-04-07 <NA>    1048     26 total      
-    ##  6 2020-04-06 <NA>     946     25 total      
-    ##  7 2020-04-05 <NA>     868     22 total      
-    ##  8 2020-04-04 <NA>     786     11 total      
-    ##  9 2020-04-03 <NA>     699     11 total      
-    ## 10 2020-04-02 <NA>     614     11 total      
-    ## # … with 25 more rows
+    ## # A tibble: 35 x 9
+    ##    date       county cases deaths new_cases new_deaths new_cases_week_…
+    ##    <date>     <fct>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
+    ##  1 2020-04-11 <NA>    1510     34       122          3            103. 
+    ##  2 2020-04-10 <NA>    1388     31       118          4             98.4
+    ##  3 2020-04-09 <NA>    1270     27       125          0             93.7
+    ##  4 2020-04-08 <NA>    1145     27        97          1             85.3
+    ##  5 2020-04-07 <NA>    1048     26       102          1             78.6
+    ##  6 2020-04-06 <NA>     946     25        78          3             74.6
+    ##  7 2020-04-05 <NA>     868     22        82         11             76  
+    ##  8 2020-04-04 <NA>     786     11        87          0             69.7
+    ##  9 2020-04-03 <NA>     699     11        85          0             66.1
+    ## 10 2020-04-02 <NA>     614     11        66          2             62.1
+    ## # … with 25 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ## #   aggregation <chr>
 
 ``` r
 iowa_remainder <- 
@@ -223,26 +230,31 @@ iowa_remainder <-
     county = factor(NA_character_, levels = counties_large),
     cases = sum(cases),
     deaths = sum(deaths),
+    new_cases = sum(new_cases),
+    new_deaths = sum(new_deaths),
+    new_cases_week_avg = sum(new_cases_week_avg),
+    new_deaths_week_avg = sum(new_deaths_week_avg),
     aggregation = "remainder"
   ) %>%
   arrange(desc(date)) %>%
   print()
 ```
 
-    ## # A tibble: 34 x 5
-    ##    date       county cases deaths aggregation
-    ##    <date>     <fct>  <dbl>  <dbl> <chr>      
-    ##  1 2020-04-11 <NA>     490      8 remainder  
-    ##  2 2020-04-10 <NA>     456      6 remainder  
-    ##  3 2020-04-09 <NA>     417      6 remainder  
-    ##  4 2020-04-08 <NA>     391      6 remainder  
-    ##  5 2020-04-07 <NA>     365      6 remainder  
-    ##  6 2020-04-06 <NA>     340      5 remainder  
-    ##  7 2020-04-05 <NA>     320      5 remainder  
-    ##  8 2020-04-04 <NA>     300      3 remainder  
-    ##  9 2020-04-03 <NA>     279      3 remainder  
-    ## 10 2020-04-02 <NA>     245      3 remainder  
-    ## # … with 24 more rows
+    ## # A tibble: 34 x 9
+    ##    date       county cases deaths new_cases new_deaths new_cases_week_…
+    ##    <date>     <fct>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
+    ##  1 2020-04-11 <NA>     490      8        34          2             27.1
+    ##  2 2020-04-10 <NA>     456      6        39          0             25.3
+    ##  3 2020-04-09 <NA>     417      6        26          0             24.6
+    ##  4 2020-04-08 <NA>     391      6        26          0             25.9
+    ##  5 2020-04-07 <NA>     365      6        25          1             25  
+    ##  6 2020-04-06 <NA>     340      5        20          0             25  
+    ##  7 2020-04-05 <NA>     320      5        20          2             26.1
+    ##  8 2020-04-04 <NA>     300      3        21          0             25.4
+    ##  9 2020-04-03 <NA>     279      3        34          0             26  
+    ## 10 2020-04-02 <NA>     245      3        35          0             25.1
+    ## # … with 24 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ## #   aggregation <chr>
 
 ``` r
 iowa_counties_large <- 
@@ -271,10 +283,11 @@ data_combined_index <-
   group_by(aggregation, county) %>%
   arrange(date) %>%
   mutate(
-    exceeds_threshold_cases = cases > params$threshold_index_cases,
-    index_cases = cumsum(exceeds_threshold_cases) - 1
-  ) %>%
-  filter(exceeds_threshold_cases)
+    exceeds_threshold_cases = cases >= params$threshold_index_cases,
+    index_cases = cumsum(exceeds_threshold_cases) - 1,
+    exceeds_threshold_new_cases = new_cases >= params$threshold_new_cases,
+    index_new_cases = cumsum(cumany(exceeds_threshold_new_cases)) - 1
+  ) 
 ```
 
     ## Warning: Factor `county` contains implicit NA, consider using
@@ -309,6 +322,32 @@ plot_cases <-
     x = NULL,
     y = "number of reported cases",
     title = "Iowa: COVID-19 cases by reporting date",
+    subtitle = "Includes counties with most reported cases, also aggregations",
+    caption = params$nyt_citation  
+  )
+```
+
+``` r
+plot_new_cases_week_avg <- 
+  ggplot(data_combined, aes(date, new_cases_week_avg)) +
+  geom_line(aes(color = county, linetype = aggregation)) +
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = county),
+    show.legend = FALSE
+  ) +
+  scale_y_log10(sec.axis = dup_axis(name = NULL)) + 
+  scale_linetype(
+    name = "grouping", 
+    breaks = c("total", "remainder", "none"),
+    labels = c("state total", "all other counties", "county")
+  ) +
+  scale_color_discrete(breaks = counties_large) +
+  theme_bw() + 
+  labs(
+    x = NULL,
+    y = "number of new reported cases",
+    title = "Iowa: COVID-19 daily new cases (7-day rolling average) by reporting date",
     subtitle = "Includes counties with most reported cases, also aggregations",
     caption = params$nyt_citation  
   )
@@ -368,7 +407,10 @@ f_doubling <- function(data, var_index, var_number, threshold_number,
 }
 
 plot_cases_ft <- 
-  ggplot(data_combined_index, aes(index_cases, cases)) +
+  ggplot(
+    data_combined_index %>% filter(index_cases >= 0), 
+    aes(index_cases, cases)
+  ) +
   geom_line(
     data = 
       . %>% 
@@ -408,6 +450,38 @@ plot_cases_ft <-
     x = glue("days since {params$threshold_index_cases} cases"),
     y = "number of reported cases",
     title = "Iowa: COVID-19 cumulative-case trajectories",
+    subtitle = "Includes counties with most reported cases, also aggregations",
+    caption = params$nyt_citation
+  )
+```
+
+``` r
+plot_new_cases_week_avg_ft <- 
+  ggplot(
+    data_combined_index %>% filter(index_new_cases >= 0),
+    aes(index_new_cases, new_cases_week_avg)
+  ) +
+  geom_line(aes(color = county, linetype = aggregation)) +
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = county),
+    show.legend = FALSE
+  ) +
+  scale_x_continuous(breaks = f_break) +
+  scale_y_log10(
+    sec.axis = dup_axis(name = NULL)
+  ) + 
+  scale_linetype(
+    name = "grouping", 
+    breaks = c("total", "remainder", "none"),
+    labels = c("state total", "all other counties", "county")
+  ) +
+  scale_color_discrete(breaks = counties_large) +
+  theme_bw() +
+  labs(
+    x = glue("days since {params$threshold_index_new_cases} new cases"),
+    y = "number of new reported cases",
+    title = "Iowa: COVID-19 new-case trajectories (7-day rolling average)",
     subtitle = "Includes counties with most reported cases, also aggregations",
     caption = params$nyt_citation
   )
@@ -611,7 +685,11 @@ iowa_counties_group_agg <-
   group_by(date, population_group) %>%
   summarize(
     cases = sum(cases),
-    deaths = sum(deaths)
+    deaths = sum(deaths),
+    new_cases = sum(new_cases),
+    new_deaths = sum(new_deaths),
+    new_cases_week_avg = sum(new_cases_week_avg),
+    new_deaths_week_avg = sum(new_deaths_week_avg)
   ) %>%
   ungroup()
 ```
@@ -640,18 +718,44 @@ plot_cases_group <-
 ```
 
 ``` r
+plot_new_cases_group <- 
+  ggplot(iowa_counties_group_agg, aes(date, new_cases_week_avg)) +
+  geom_line(
+    aes(color = population_group)
+  ) +  
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = population_group),
+    show.legend = FALSE
+  ) +
+  scale_color_manual(values = group_colors) +
+  scale_y_log10(sec.axis = dup_axis(name = NULL)) + 
+  theme_bw() + 
+  labs(
+    x = NULL,
+    y = "number of new reported cases",
+    color = "group",
+    title = "Iowa: COVID-19 daily new cases (7-day rolling average) by reporting date",
+    caption = params$nyt_citation  
+  )
+```
+
+``` r
 iowa_counties_group_agg_ft <- 
   iowa_counties_group_agg %>%
   group_by(population_group) %>%
   arrange(date) %>%
   mutate(
     exceeds_threshold_cases = cases > params$threshold_index_cases,
-    index_cases = cumsum(exceeds_threshold_cases) - 1
-  ) %>%
-  filter(exceeds_threshold_cases)
+    index_cases = cumsum(exceeds_threshold_cases) - 1,
+    exceeds_threshold_new_cases = new_cases >= params$threshold_index_new_cases,
+    index_new_cases = cumsum(cumany(exceeds_threshold_new_cases)) - 1    
+  ) 
 
 plot_cases_group_ft <-
-  ggplot(iowa_counties_group_agg_ft, aes(index_cases, cases)) +
+  ggplot(
+    iowa_counties_group_agg_ft %>% filter(exceeds_threshold_cases), 
+    aes(index_cases, cases)) +
   geom_line(
     data = 
       . %>% 
@@ -687,6 +791,32 @@ plot_cases_group_ft <-
     y = "number of reported cases",
     color = "group",
     title = "Iowa: COVID-19 cumulative-case trajectories",
+    caption = params$nyt_citation
+  )
+```
+
+``` r
+plot_new_cases_group_ft <-
+  ggplot(
+    iowa_counties_group_agg_ft %>% filter(index_new_cases >= 0), 
+    aes(index_new_cases, new_cases_week_avg)) +
+  geom_line(aes(color = population_group)) +
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = population_group),
+    show.legend = FALSE
+  ) +
+  scale_x_continuous(breaks = f_break) +
+  scale_y_log10(
+    sec.axis = dup_axis(name = NULL)
+  ) + 
+  scale_color_manual(values = group_colors) +
+  theme_bw() +
+  labs(
+    x = glue("days since {params$threshold_index_new_cases} new cases"),
+    y = "number of new reported cases",
+    color = "group",
+    title = "Iowa: COVID-19 new-case trajectories (7-day rolling average)",
     caption = params$nyt_citation
   )
 ```
@@ -732,6 +862,18 @@ plot_cases_ft
 ![](01-Iowa_files/figure-gfm/cases-county-ft-1.png)<!-- -->
 
 ``` r
+plot_new_cases_week_avg
+```
+
+![](01-Iowa_files/figure-gfm/new-cases-county-1.png)<!-- -->
+
+``` r
+plot_new_cases_week_avg_ft
+```
+
+![](01-Iowa_files/figure-gfm/new-cases-county-ft-1.png)<!-- -->
+
+``` r
 plot_iowa_map_group
 ```
 
@@ -750,7 +892,19 @@ plot_cases_group
 ![](01-Iowa_files/figure-gfm/cases-group-1.png)<!-- -->
 
 ``` r
+plot_new_cases_group
+```
+
+![](01-Iowa_files/figure-gfm/new-cases-group-1.png)<!-- -->
+
+``` r
 plot_cases_group_ft
 ```
 
 ![](01-Iowa_files/figure-gfm/cases-group-ft-1.png)<!-- -->
+
+``` r
+plot_new_cases_group_ft
+```
+
+![](01-Iowa_files/figure-gfm/new-cases-group-ft-1.png)<!-- -->
