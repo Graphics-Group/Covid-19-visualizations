@@ -1,7 +1,7 @@
 Data Download
 ================
 Ian Lyttle
-2020-04-10
+2020-04-12
 
 The purpose of this document is to download the datasets used.
 
@@ -31,8 +31,13 @@ download.file(
 ```
 
 ``` r
-download.file(
-  "https://www.icip.iastate.edu/sites/default/files/uploads/tables/population/popest-annual.xls",
-  path(dir_target, "iowa_counties_population.xls")
-)
+# we don't need to download this *every* time
+file_excel <- path(dir_target, "iowa_counties_population.xls")
+
+if (!file_exists(file_excel)) {
+  download.file(
+    "https://www.icip.iastate.edu/sites/default/files/uploads/tables/population/popest-annual.xls",
+    file_excel
+  ) 
+}
 ```

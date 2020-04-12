@@ -2,7 +2,17 @@
 title: "COVID-19 Iowa"
 author: "Ian Lyttle"
 date: "`r Sys.Date()`"
-output: github_document
+output: 
+  github_document:
+    fig_width: 9 
+    fig_height: 4.5 
+params:
+  threshold_cases: 50 # for individual counties
+  threshold_index_cases: 20 # for indexing FT-style charts
+  threshold_new_cases: 5
+  threshold_index_new_cases: 5
+  nyt_citation: "Data from NYT, via state and local health agencies"
+  iowa_citation: "Data from Iowa Community Indicators Program, via US Census Bureau"
 ---
 
 ```{r}
@@ -13,6 +23,7 @@ library("readxl")
 library("USAboundaries") # also install_github("ropensci/USAboundariesData")
 library("sf")
 library("colorspace")
+library("RcppRoll")
 ```
 
 ```{r}
@@ -38,14 +49,23 @@ iowa_counties <-
   us_counties %>%
   filter(state == "Iowa") %>%
   select(date, county, cases, deaths) %>%
-  mutate(aggregation = "none") %>%
+  group_by(county) %>%
+  arrange(date) %>%
+  mutate(
+    new_cases = cases - lag(cases, default = 0),
+    new_deaths = deaths - lag(deaths, default = 0),
+    new_cases_week_avg = (cases - lag(cases, n = 7, default = 0)) / 7,
+    new_deaths_week_avg = (deaths - lag(deaths, n = 7, default = 0)) / 7,
+    aggregation = "none"
+  ) %>%
+  ungroup() %>%
   arrange(desc(date), desc(cases)) %>%
   print()
 ```
 
 Let's have a quick look at all the counties.
 
-```{r}
+```{r county-raw}
 ggplot(iowa_counties, aes(date, cases)) +
   geom_line(aes(color = county)) +
   scale_y_log10()
@@ -65,7 +85,7 @@ iowa_counties_current <-
 
 It could be useful to see the current distribution of number of cases per county:
 
-```{r}
+```{r county-histogram}
 date_max <- unique(iowa_counties_current$date)
 
 ggplot(iowa_counties_current) +
@@ -75,23 +95,18 @@ ggplot(iowa_counties_current) +
     x = "number of reported cases in county",
     y = "number of counties",
     title = glue("Iowa: distribution of counties by number of COVID-19 cases - {date_max}"),
-    caption = "Data from NYT, based on reports from state and local health agencies"  
+    caption = params$nyt_citation  
   ) 
 ```
 
 On the right, we see Johnson, Polk, and Linn counties, with the greatest number of reported cases. On the left, we see a lot of counties with only a few cases. 
 
-```{r}
-# arbitrary threshold; will have to adjust as things change
-threshold <- 25
-```
-
-Our eyes will let us pay attention to only a finite number of things at a time, so I propose to set a threshold of `r threshold` cases. We identify those counties where the number of cases is greater than or equal to the threshold.
+Our eyes will let us pay attention to only a finite number of things at a time, so I propose to set a threshold of `r params$threshold_cases` cases. We identify those counties where the number of cases is greater than or equal to the threshold.
 
 ```{r}
 counties_large <- 
   iowa_counties_current %>%
-  filter(cases >= 20) %>%
+  filter(cases >= params$threshold_cases) %>%
   arrange(desc(cases)) %>%
   pull(county)
 
@@ -111,6 +126,10 @@ iowa_total <-
     county = factor(NA_character_, levels = counties_large),
     cases = sum(cases),
     deaths = sum(deaths),
+    new_cases = sum(new_cases),
+    new_deaths = sum(new_deaths),
+    new_cases_week_avg = sum(new_cases_week_avg),
+    new_deaths_week_avg = sum(new_deaths_week_avg),
     aggregation = "total"
   ) %>%
   arrange(desc(date)) %>%
@@ -126,6 +145,10 @@ iowa_remainder <-
     county = factor(NA_character_, levels = counties_large),
     cases = sum(cases),
     deaths = sum(deaths),
+    new_cases = sum(new_cases),
+    new_deaths = sum(new_deaths),
+    new_cases_week_avg = sum(new_cases_week_avg),
+    new_deaths_week_avg = sum(new_deaths_week_avg),
     aggregation = "remainder"
   ) %>%
   arrange(desc(date)) %>%
@@ -147,11 +170,8 @@ Let's combine our datasets:
 data_combined <- bind_rows(iowa_counties_large, iowa_total, iowa_remainder)
 ```
 
-```{r}
-threshold_index_cases <- 10
-```
 
-If we wanted do one of those [FT-style charts](https://www.ft.com/coronavirus-latest), we need to choose an index day for each county and aggregation. We choose an arbitrary threshold of `r threshold_index_cases` reported cases.
+If we wanted do one of those [FT-style charts](https://www.ft.com/coronavirus-latest), we need to choose an index day for each county and aggregation. We choose an arbitrary threshold of `r params$threshold_index_cases` reported cases.
 
 ```{r}
 data_combined_index <- 
@@ -159,10 +179,11 @@ data_combined_index <-
   group_by(aggregation, county) %>%
   arrange(date) %>%
   mutate(
-    exceeds_threshold_cases = cases > threshold_index_cases,
-    index_cases = cumsum(exceeds_threshold_cases) - 1
-  ) %>%
-  filter(exceeds_threshold_cases)
+    exceeds_threshold_cases = cases >= params$threshold_index_cases,
+    index_cases = cumsum(exceeds_threshold_cases) - 1,
+    exceeds_threshold_new_cases = new_cases >= params$threshold_new_cases,
+    index_new_cases = cumsum(cumany(exceeds_threshold_new_cases)) - 1
+  ) 
 ```
 
 We combine all these datasets into a plot:
@@ -189,11 +210,39 @@ plot_cases <-
     y = "number of reported cases",
     title = "Iowa: COVID-19 cases by reporting date",
     subtitle = "Includes counties with most reported cases, also aggregations",
-    caption = "Data from NYT, based on reports from state and local health agencies"  
+    caption = params$nyt_citation  
   )
 ```
 
 ```{r}
+plot_new_cases_week_avg <- 
+  ggplot(data_combined, aes(date, new_cases_week_avg)) +
+  geom_line(aes(color = county, linetype = aggregation)) +
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = county),
+    show.legend = FALSE
+  ) +
+  scale_y_log10(sec.axis = dup_axis(name = NULL)) + 
+  scale_linetype(
+    name = "grouping", 
+    breaks = c("total", "remainder", "none"),
+    labels = c("state total", "all other counties", "county")
+  ) +
+  scale_color_discrete(breaks = counties_large) +
+  theme_bw() + 
+  labs(
+    x = NULL,
+    y = "number of new reported cases",
+    title = "Iowa: COVID-19 daily new cases (7-day rolling average) by reporting date",
+    subtitle = "Includes counties with most reported cases, also aggregations",
+    caption = params$nyt_citation  
+  )
+```
+
+```{r}
+# function that takes a set of limits, returns the breaks
+# - we want breaks every 7 days.
 f_break <- function(limits) {
 
   low <- floor(limits[1] / 7) * 7
@@ -202,37 +251,69 @@ f_break <- function(limits) {
   seq(low, hi, by = 7)
 }
 
+# function that returns data for "doubling" lines
+#' @param data          `data.frame`
+#' @param var_index     `character`, name of variable in `data` containing day-index
+#' @param var_number    `character`, name of variable in `data` contiaining number-data
+#' @param days_doubling `numeric`, vector with number-of-days to include
+#'
+#' @return `data.frame` with variables `days_doubling`, `index`, `number`, `label`
+#'
+f_doubling <- function(data, var_index, var_number, threshold_number,
+                       days_doubling = c(2, 4, 7, 14)) {
 
-f_doubling <- function(data) {
+  index_range <- range(data[[var_index]])
+  number_range <- range(data[[var_number]])
+  
+  max_number <- number_range[2]
+  max_index <- index_range[2]
 
-  days_doubling <- c(2, 4, 7, 14)
-  index_cases <- c(0, max(data$index_cases))
+  # for each `days_doubling`, determine the index when days are maximum 
+  by_number <- 
+    crossing(days_doubling, number = max_number) %>%
+    mutate(
+      index = days_doubling * log(number/threshold_number, 2)
+    )
+    
+  by_index <- 
+    crossing(days_doubling, index = index_range) %>%
+    mutate(
+      number = threshold_number * 2^(index/days_doubling)
+    )
+
+  combined <- 
+    dplyr::bind_rows(by_index, by_number) %>%
+    dplyr::select(days_doubling, index, number) %>%
+    dplyr::mutate(
+      label = ifelse(index > 0, glue::glue("{days_doubling}-day doubling"), "")
+    ) %>%
+    dplyr::filter(index <= max_index, number <= max_number) %>%
+    dplyr::arrange(days_doubling, index) 
+  
+  combined
 }
 
-index_max <- max(data_combined_index$index_cases)
-days_doubling <- c(2, 4, 7, 14)
-index_cases <- c(0, index_max)
-
-doubling <- 
-  crossing(days_doubling, index_cases) %>%
-  mutate(
-    cases = 10 * 2^(index_cases/days_doubling),
-    label = glue("{days_doubling} days")
-  )
-
 plot_cases_ft <- 
-  ggplot(data_combined_index, aes(index_cases, cases)) +
+  ggplot(
+    data_combined_index %>% filter(index_cases >= 0), 
+    aes(index_cases, cases)
+  ) +
   geom_line(
-    data = doubling, 
-    aes(group = factor(days_doubling)),
+    data = 
+      . %>% 
+      f_doubling("index_cases", "cases", params$threshold_index_cases), 
+    aes(x = index, y = number, group = factor(days_doubling)),
     color = "grey80",
     linetype = "twodash"
   ) +
   geom_text(
-    data = doubling %>% filter(index_cases > 0), 
-    aes(group = factor(days_doubling), label = label),
-    hjust = 0, 
-    nudge_x = -1.5,
+    data = 
+      . %>% 
+      f_doubling("index_cases", "cases", params$threshold_index_cases) %>%
+      filter(str_length(label) > 0), 
+    aes(x = index, y = number, group = factor(days_doubling), label = label),
+    hjust = "right", 
+    nudge_y = 0.05,
     color = "grey80"
   ) +
   geom_line(aes(color = county, linetype = aggregation)) +
@@ -251,44 +332,49 @@ plot_cases_ft <-
     labels = c("state total", "all other counties", "county")
   ) +
   scale_color_discrete(breaks = counties_large) +
-  coord_cartesian(ylim = c(NA, 1000)) +
   theme_bw() +
   labs(
-    x = glue("days since {threshold_index_cases} cases"),
+    x = glue("days since {params$threshold_index_cases} cases"),
     y = "number of reported cases",
     title = "Iowa: COVID-19 cumulative-case trajectories",
     subtitle = "Includes counties with most reported cases, also aggregations",
-    caption = "Data from NYT, based on reports from state and local health agencies"  
+    caption = params$nyt_citation
   )
 ```
 
-I decided to plot this using "real" time, rather than by "days from x-number of cases" time, to make it easier to see statewide trends and line them up with each other.
-
-## Discussion
-
-```{r echo=FALSE, fig.width=9, fig.height=4.5}
-plot_cases
+```{r}
+plot_new_cases_week_avg_ft <- 
+  ggplot(
+    data_combined_index %>% filter(index_new_cases >= 0),
+    aes(index_new_cases, new_cases_week_avg)
+  ) +
+  geom_line(aes(color = county, linetype = aggregation)) +
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = county),
+    show.legend = FALSE
+  ) +
+  scale_x_continuous(breaks = f_break) +
+  scale_y_log10(
+    sec.axis = dup_axis(name = NULL)
+  ) + 
+  scale_linetype(
+    name = "grouping", 
+    breaks = c("total", "remainder", "none"),
+    labels = c("state total", "all other counties", "county")
+  ) +
+  scale_color_discrete(breaks = counties_large) +
+  theme_bw() +
+  labs(
+    x = glue("days since {params$threshold_index_new_cases} new cases"),
+    y = "number of new reported cases",
+    title = "Iowa: COVID-19 new-case trajectories (7-day rolling average)",
+    subtitle = "Includes counties with most reported cases, also aggregations",
+    caption = params$nyt_citation
+  )
 ```
 
-To be *very* clear, I am not an epidemiologist, so it is entirely possible that I am missing some important nuance here. 
-
-Assuming that testing standards do not vary (too much) across the state, and remain relatively constant over time, here's what I'm seeing from this plot:
-
-- Considering the state total, cases are doubling every seven-or-so days.
-
-- The rate-of-growth for "all other counties" is tracking the rate-of-growth for the state, as a whole. This appears to be the case for the last two weeks.
-
-Opinion/conjecture: 
-
-- What we are seeing reported is a sense of what was *actually* happening a week or so previous.
-
-- By saying that we, as a state, don't need to be doing anything differently, we are also saying that we are prepared to accept the doubling of cases every week days for the forseeable future.
-
-For another view, here's an [FT-style chart](https://www.ft.com/coronavirus-latest):
-
-```{r echo=FALSE, fig.width=9, fig.height=4.5}
-plot_cases_ft
-```
+### County groups
 
 Let's look at the poulation of counties. I'd like to sort Iowa's counties into four groups, ordered by county-population, such that each *group* of counties contains approximately the same population. 
 
@@ -323,7 +409,7 @@ iowa_county_population <-
 
 You can see that the "first" group contains two counties: Polk and Linn; the "second" group contains seven counties, from Scott to Dallas. This second group of counties is home to the Regents' Universities, Iowa's part of the Quad cities, Dubuque, Sioux City, and suburban Des Moines.
 
-The "thrid" and "fourth" groups contain 24 and 66 counties, respectively. Here's a map of Iowa's counties, showing these groups:
+The "third" and "fourth" groups contain 24 and 66 counties, respectively. Here's a map of Iowa's counties, showing these groups:
 
 ```{r}
 iowa_map <- us_counties(resolution = "low", state = "Iowa")
@@ -341,8 +427,11 @@ iowa_map_with_group <-
     iowa_county_population %>% select(county, population_group),
     by = c(name = "county")  
   )
+```
 
-ggplot() +
+```{r}
+plot_iowa_map_group <-
+  ggplot() +
   geom_sf(
     data = iowa_map_with_group, 
     aes(fill = population_group),
@@ -350,9 +439,9 @@ ggplot() +
   ) + 
   scale_fill_manual(values = group_colors) + 
   labs(
-    title = "Iowa Counties by population-group",
+    title = "Iowa counties by population-group",
     subtitle = "Each population-group has about 1/4 of state's population (2019 estimate)",
-    caption = "Source: Iowa Community Indicators Program, from US Census Bureau",
+    caption = params$iowa_citation,
     fill = "group"
   ) +
   theme_minimal() +
@@ -365,7 +454,7 @@ ggplot() +
 Let's look at proportions of counties, population, and (most-recent) reported cases and deaths.
 
 ```{r}
-iowa_proportions <-
+iowa_counts <-
   iowa_county_population %>% select(county, population, population_group) %>%
   left_join(
     iowa_counties_current,
@@ -386,14 +475,34 @@ iowa_proportions <-
 ```
 
 ```{r}
+vars_count <- c("counties", "population", "cases", "deaths")
+
+iowa_counts_tall <-
+  iowa_counts %>%
+  pivot_longer(
+    all_of(vars_count), 
+    names_to = "category", 
+    values_to = "count"
+  ) %>%
+  mutate(
+    category = factor(category, rev(vars_count))
+  ) %>%
+  print()
+```
+
+```{r}
+plot_iowa_proportions <-
   ggplot(
-    iowa_proportions, 
-    aes(x = "1", y = population)
+    iowa_counts_tall, 
+    aes(x = category, y = count)
   ) + 
   geom_col(aes(fill = population_group), position = position_fill(reverse = TRUE)) + 
+  scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values = group_colors) + 
   coord_flip() +
   labs(
+    x = "",
+    y = "proportion",
     fill = "group"
   ) +
   theme_bw()
@@ -413,14 +522,19 @@ iowa_counties_group_agg <-
   group_by(date, population_group) %>%
   summarize(
     cases = sum(cases),
-    deaths = sum(deaths)
+    deaths = sum(deaths),
+    new_cases = sum(new_cases),
+    new_deaths = sum(new_deaths),
+    new_cases_week_avg = sum(new_cases_week_avg),
+    new_deaths_week_avg = sum(new_deaths_week_avg)
   ) %>%
   ungroup()
 ```
 
 
 ```{r}
-ggplot(iowa_counties_group_agg, aes(date, cases)) +
+plot_cases_group <- 
+  ggplot(iowa_counties_group_agg, aes(date, cases)) +
   geom_line(
     aes(color = population_group)
   ) +  
@@ -437,33 +551,65 @@ ggplot(iowa_counties_group_agg, aes(date, cases)) +
     y = "number of reported cases",
     color = "group",
     title = "Iowa: COVID-19 cases by reporting date",
-    caption = "Data from NYT, based on reports from state and local health agencies"  
+    caption = params$nyt_citation  
   )
 ```
 
-```{r fig.width=9, fig.height=4.5}
+```{r}
+plot_new_cases_group <- 
+  ggplot(iowa_counties_group_agg, aes(date, new_cases_week_avg)) +
+  geom_line(
+    aes(color = population_group)
+  ) +  
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = population_group),
+    show.legend = FALSE
+  ) +
+  scale_color_manual(values = group_colors) +
+  scale_y_log10(sec.axis = dup_axis(name = NULL)) + 
+  theme_bw() + 
+  labs(
+    x = NULL,
+    y = "number of new reported cases",
+    color = "group",
+    title = "Iowa: COVID-19 daily new cases (7-day rolling average) by reporting date",
+    caption = params$nyt_citation  
+  )
+```
+
+```{r}
 iowa_counties_group_agg_ft <- 
   iowa_counties_group_agg %>%
   group_by(population_group) %>%
   arrange(date) %>%
   mutate(
-    exceeds_threshold_cases = cases > threshold_index_cases,
-    index_cases = cumsum(exceeds_threshold_cases) - 1
-  ) %>%
-  filter(exceeds_threshold_cases)
+    exceeds_threshold_cases = cases > params$threshold_index_cases,
+    index_cases = cumsum(exceeds_threshold_cases) - 1,
+    exceeds_threshold_new_cases = new_cases >= params$threshold_index_new_cases,
+    index_new_cases = cumsum(cumany(exceeds_threshold_new_cases)) - 1    
+  ) 
 
-ggplot(iowa_counties_group_agg_ft, aes(index_cases, cases)) +
+plot_cases_group_ft <-
+  ggplot(
+    iowa_counties_group_agg_ft %>% filter(exceeds_threshold_cases), 
+    aes(index_cases, cases)) +
   geom_line(
-    data = doubling, 
-    aes(group = factor(days_doubling)),
+    data = 
+      . %>% 
+      f_doubling("index_cases", "cases", params$threshold_index_cases), 
+    aes(x = index, y = number, group = factor(days_doubling)),
     color = "grey80",
     linetype = "twodash"
   ) +
   geom_text(
-    data = doubling %>% filter(index_cases > 0), 
-    aes(group = factor(days_doubling), label = label),
-    hjust = 0, 
-    nudge_x = -1.5,
+    data = 
+      . %>% 
+      f_doubling("index_cases", "cases", params$threshold_index_cases) %>%
+      filter(str_length(label) > 0), 
+    aes(x = index, y = number, label = label),
+    hjust = "right", 
+    nudge_y = 0.05,
     color = "grey80"
   ) +
   geom_line(aes(color = population_group)) +
@@ -477,13 +623,96 @@ ggplot(iowa_counties_group_agg_ft, aes(index_cases, cases)) +
     sec.axis = dup_axis(name = NULL)
   ) + 
   scale_color_manual(values = group_colors) +
-  coord_cartesian(ylim = c(NA, 1000)) +
   theme_bw() +
   labs(
-    x = glue("days since {threshold_index_cases} cases"),
+    x = glue("days since {params$threshold_index_cases} cases"),
     y = "number of reported cases",
     color = "group",
     title = "Iowa: COVID-19 cumulative-case trajectories",
-    caption = "Data from NYT, based on reports from state and local health agencies"  
+    caption = params$nyt_citation
   )
+```
+
+```{r}
+plot_new_cases_group_ft <-
+  ggplot(
+    iowa_counties_group_agg_ft %>% filter(index_new_cases >= 0), 
+    aes(index_new_cases, new_cases_week_avg)) +
+  geom_line(aes(color = population_group)) +
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = population_group),
+    show.legend = FALSE
+  ) +
+  scale_x_continuous(breaks = f_break) +
+  scale_y_log10(
+    sec.axis = dup_axis(name = NULL)
+  ) + 
+  scale_color_manual(values = group_colors) +
+  theme_bw() +
+  labs(
+    x = glue("days since {params$threshold_index_new_cases} new cases"),
+    y = "number of new reported cases",
+    color = "group",
+    title = "Iowa: COVID-19 new-case trajectories (7-day rolling average)",
+    caption = params$nyt_citation
+  )
+```
+
+
+## Discussion
+
+```{r cases-county}
+plot_cases
+```
+
+To be *very* clear, I am not an epidemiologist, so it is entirely possible that I am missing some important nuance here. 
+
+Assuming that testing standards do not vary (too much) across the state, and remain relatively constant over time, here's what I'm seeing from this plot:
+
+- Considering the state total, cases are doubling every seven-or-so days.
+
+- The rate-of-growth for "all other counties" is tracking the rate-of-growth for the state, as a whole. This appears to be the case for the last two weeks.
+
+Opinion/conjecture: 
+
+- What we are seeing reported is a sense of what was *actually* happening a week or so previous.
+
+- By saying that we, as a state, don't need to be doing anything differently, we are also saying that we are prepared to accept the doubling of cases every week days for the forseeable future.
+
+For another view, here's an [FT-style chart](https://www.ft.com/coronavirus-latest):
+
+```{r cases-county-ft}
+plot_cases_ft
+```
+
+```{r new-cases-county}
+plot_new_cases_week_avg
+```
+
+```{r new-cases-county-ft}
+plot_new_cases_week_avg_ft
+```
+
+```{r iowa-map}
+plot_iowa_map_group
+```
+
+```{r iowa-proportions}
+plot_iowa_proportions
+```
+
+```{r cases-group}
+plot_cases_group
+```
+
+```{r new-cases-group}
+plot_new_cases_group
+```
+
+```{r cases-group-ft}
+plot_cases_group_ft
+```
+```{r new-cases-group-ft}
+plot_new_cases_group_ft
 ```
