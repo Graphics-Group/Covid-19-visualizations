@@ -15,6 +15,11 @@ Generally: add what you want, but if you break it you fix it :)
 
 John Hopkins and the NY Times are posting up-to-date information about the number of Covid-19 cases. 
 
+## License
+
+This work is licensed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
+
+## Examples
 
 ```{r echo=FALSE, warning = FALSE, message=FALSE}
 library(tidyverse)
