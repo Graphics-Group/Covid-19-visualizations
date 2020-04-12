@@ -86,14 +86,14 @@ centers <- counties %>%
   )
 
 counties_map <- counties %>% left_join(nytmap, by = c("region", "subregion")) %>%
-  filter(region=="iowa") %>%
+  filter(region %in% c("iowa")) %>%
   arrange(order) 
 
-state <- "iowa"
+state <- c("iowa")
 counties_map %>% 
   ggplot(aes(x = long, y = lat)) +
   geom_polygon(aes(group=interaction(region, subregion), fill=doubles), colour="grey50", size=0.15) +
-  scale_fill_brewer("Cases double in", palette="OrRd", na.value = "white") + #labels=c("one week or more", "4 days to one week", "2 to 4 days", "fewer than 2 days", NA),  ) +
+  scale_fill_brewer("Since 10th case\ncases double in", palette="OrRd", na.value = "white") + #labels=c("one week or more", "4 days to one week", "2 to 4 days", "fewer than 2 days", NA),  ) +
   ggthemes::theme_map() +
   theme(legend.position = "right") +
   geom_text(aes(x=px, y= py, label=shorts_cases, 
@@ -102,7 +102,7 @@ counties_map %>%
             ) +
   scale_colour_manual(values=c("white", "grey10"), 
                       na.value="grey10", guide=NULL) +
-  geom_polygon(aes(group=group), data = map_data("state") %>% filter(region==state), colour="grey30", fill=NA, size=0.25) +
+  geom_polygon(aes(group=group), data = map_data("state") %>% filter(region %in% state), colour="grey30", fill=NA, size=0.25) +
   ggtitle(paste0("Cases in Iowa's counties as of ", max(nyt$date)))
 ```
 
