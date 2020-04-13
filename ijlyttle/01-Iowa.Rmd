@@ -503,7 +503,9 @@ plot_iowa_proportions <-
   labs(
     x = "",
     y = "proportion",
-    fill = "group"
+    fill = "group",
+    title = glue("Iowa: COVID-19 proportions - as of {date_max}"),
+    caption = params$nyt_citation
   ) +
   theme_bw()
 ```
