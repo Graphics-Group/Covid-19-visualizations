@@ -21,6 +21,8 @@ This work is licensed under a [Creative Commons Attribution 4.0 International Li
 
 ## Examples
 
+This chart shows the number of cases in Iowa - fill color shows recent trend (last week) of the number of days in which cases double.
+
 ```{r echo=FALSE, warning = FALSE, message=FALSE}
 library(tidyverse)
 library(lubridate)
@@ -45,7 +47,11 @@ nyt <- nyt %>%
   mutate(
     first10 = date[which(cases >=10)[1]],
     ratio = (log10(max(cases))-1)/as.numeric(max(date)-first10),
-    doubles = findInterval(ratio, c(0, 1/7, 1/4, 1/2, 1) * log10(2), 
+    lastweek = max(date) - 7,
+    cases_lastweek = ifelse(length(cases[date==lastweek])==1, cases[date==lastweek], 10),
+    ratio_lastweek = (log10(max(cases))-log10(cases_lastweek))/as.numeric(max(date)-lastweek),
+    ratio_lastweek = ifelse(max(cases) < 10, NA, ratio_lastweek),
+    doubles = findInterval(ratio_lastweek, c(0, 1/7, 1/4, 1/2, 1) * log10(2), 
                            rightmost.closed = TRUE, all.inside = FALSE,
                            left.open = TRUE),
     cum_cases = max(cases)
@@ -77,7 +83,7 @@ centers <- counties %>%
     shorts = toupper(gsub("(...).*", "\\1", subregion))
   ) %>% 
   left_join(
-    nytmap %>% select(region, subregion, cum_cases, ratio) %>% unique(), 
+    nytmap %>% select(region, subregion, cum_cases, ratio, ratio_lastweek) %>% unique(), 
     by = c("region", "subregion")
   ) %>%
   mutate(
@@ -85,26 +91,25 @@ centers <- counties %>%
       ifelse(is.na(cum_cases), shorts, sprintf("%s\n%d", shorts, cum_cases))
   )
 
+colors <- RColorBrewer::brewer.pal(n=4, name="OrRd")
 counties_map <- counties %>% left_join(nytmap, by = c("region", "subregion")) %>%
-  filter(region %in% c("iowa")) %>%
+  filter(region=="iowa") %>%
   arrange(order) 
 
-orrd <- RColorBrewer::brewer.pal(name="OrRd", n = 4)
-state <- c("iowa")
+state <- "iowa"
 counties_map %>% 
   ggplot(aes(x = long, y = lat)) +
   geom_polygon(aes(group=interaction(region, subregion), fill=doubles), colour="grey50", size=0.15) +
-  scale_fill_manual("Since 10th case\ncases double in", 
-                    values = orrd, na.value = "white") +
+  scale_fill_brewer("Cases since last week\ndouble in", palette="OrRd", na.value = "white") + #labels=c("one week or more", "4 days to one week", "2 to 4 days", "fewer than 2 days", NA),  ) +
   ggthemes::theme_map() +
   theme(legend.position = "right") +
   geom_text(aes(x=px, y= py, label=shorts_cases, 
-                colour = I(ratio < 1/4*log10(2) | cum_cases <= 10)),   
+                colour = I(ratio_lastweek < 1/4*log10(2) | cum_cases <= 10)),   
             size=2, data = centers %>% filter(region==state)
             ) +
   scale_colour_manual(values=c("white", "grey10"), 
                       na.value="grey10", guide=NULL) +
-  geom_polygon(aes(group=group), data = map_data("state") %>% filter(region %in% state), colour="grey30", fill=NA, size=0.25) +
+  geom_polygon(aes(group=group), data = map_data("state") %>% filter(region==state), colour="grey30", fill=NA, size=0.25)  +
   ggtitle(paste0("Cases in Iowa's counties as of ", max(nyt$date)))
 ```
 
