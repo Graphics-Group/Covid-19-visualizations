@@ -19,15 +19,13 @@ params:
 library("fs")
 library("glue")
 library("tidyverse")
-library("readxl")
 library("USAboundaries") # also install_github("ropensci/USAboundariesData")
 library("sf")
 library("colorspace")
-library("RcppRoll")
 ```
 
 ```{r}
-dir_source <- path("data", "download")
+dir_source <- path("data", "wrangle")
 dir_target <- path("data", "iowa")
 
 dir_create(dir_target)
@@ -38,28 +36,8 @@ dir_create(dir_target)
 Let's read in the county data:
 
 ```{r}
-us_counties <- 
-  read_csv(path(dir_source, "us-counties.csv"))
-```
-
-For now, let's get the Iowa data, only a few of the columns, and we will create a column to note the type of aggregation ("none" for the county-level data).
-
-```{r}
-iowa_counties <-
-  us_counties %>%
-  filter(state == "Iowa") %>%
-  select(date, county, cases, deaths) %>%
-  group_by(county) %>%
-  arrange(date) %>%
-  mutate(
-    new_cases = cases - lag(cases, default = 0),
-    new_deaths = deaths - lag(deaths, default = 0),
-    new_cases_week_avg = (cases - lag(cases, n = 7, default = 0)) / 7,
-    new_deaths_week_avg = (deaths - lag(deaths, n = 7, default = 0)) / 7,
-    aggregation = "none"
-  ) %>%
-  ungroup() %>%
-  arrange(desc(date), desc(cases)) %>%
+iowa_counties <- 
+  read_csv(path(dir_source, "iowa-counties.csv")) %>%
   print()
 ```
 
@@ -379,31 +357,8 @@ plot_new_cases_week_avg_ft <-
 Let's look at the poulation of counties. I'd like to sort Iowa's counties into four groups, ordered by county-population, such that each *group* of counties contains approximately the same population. 
 
 ```{r}
-iowa_county_population <-
-  read_xls(
-    path = path(dir_source, "iowa_counties_population.xls"), 
-    sheet = "Counties", 
-    range = "A7:M107"
-  ) %>%
-  transmute(
-    fips = Fips,
-    county = str_replace(Area, " County, Iowa", ""),
-    population = `2019`
-  ) %>%
-  filter(fips > 19) %>%
-  arrange(population) %>%
-  mutate(
-    cumulative_poulation = cumsum(population),
-    quartile_population = cumulative_poulation/max(cumulative_poulation),
-    population_group = cut(
-      quartile_population, 
-      breaks = c(0, 0.25, 0.51, 0.78, 1),
-      labels = c("small", "mid-small", "mid-large", "large")
-      # labels = c("FT-AA", "PW-HN", "ST-DA", "PK-LN")
-    ),
-    population_group = fct_rev(population_group)
-  ) %>%
-  arrange(desc(cumulative_poulation)) %>%
+iowa_county_population <- 
+  read_csv(path(dir_source, "iowa-county-population.csv")) %>%
   print()
 ```
 
@@ -509,7 +464,6 @@ plot_iowa_proportions <-
   ) +
   theme_bw()
 ```
-
 
 ```{r fig.width=9, fig.height=4.5}
 iowa_counties_group <-
@@ -661,26 +615,11 @@ plot_new_cases_group_ft <-
   )
 ```
 
-
 ## Discussion
 
 ```{r cases-county}
 plot_cases
 ```
-
-To be *very* clear, I am not an epidemiologist, so it is entirely possible that I am missing some important nuance here. 
-
-Assuming that testing standards do not vary (too much) across the state, and remain relatively constant over time, here's what I'm seeing from this plot:
-
-- Considering the state total, cases are doubling every seven-or-so days.
-
-- The rate-of-growth for "all other counties" is tracking the rate-of-growth for the state, as a whole. This appears to be the case for the last two weeks.
-
-Opinion/conjecture: 
-
-- What we are seeing reported is a sense of what was *actually* happening a week or so previous.
-
-- By saying that we, as a state, don't need to be doing anything differently, we are also saying that we are prepared to accept the doubling of cases every week days for the forseeable future.
 
 For another view, here's an [FT-style chart](https://www.ft.com/coronavirus-latest):
 

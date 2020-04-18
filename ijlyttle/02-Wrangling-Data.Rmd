@@ -1,0 +1,121 @@
+---
+title: "Wrangling Data"
+author: "Ian Lyttle"
+date: "`r Sys.Date()`"
+output: github_document
+---
+
+The purpose of this document is to wrangle the data into useful forms. We will write out two data frames: `iowa_counties` and `iowa_county_population`.
+
+```{r}
+library("fs")
+library("tidyverse")
+library("lubridate")
+library("readxl")
+library("rvest")
+```
+
+
+```{r}
+dir_source <- path("data", "download")
+dir_target <- path("data", "wrangle")
+
+dir_create(dir_target)
+```
+
+## Population data
+
+
+```{r}
+iowa_county_population <-
+  read_xls(
+    path = path(dir_source, "iowa_counties_population.xls"), 
+    sheet = "Counties", 
+    range = "A7:M107"
+  ) %>%
+  transmute(
+    fips = Fips,
+    county = str_replace(Area, " County, Iowa", ""),
+    population = `2019`
+  ) %>%
+  filter(fips > 19) %>%
+  arrange(population) %>%
+  mutate(
+    cumulative_poulation = cumsum(population),
+    quartile_population = cumulative_poulation/max(cumulative_poulation),
+    population_group = cut(
+      quartile_population, 
+      breaks = c(0, 0.25, 0.51, 0.78, 1),
+      labels = c("small", "mid-small", "mid-large", "large")
+      # labels = c("FT-AA", "PW-HN", "ST-DA", "PK-LN")
+    ),
+    population_group = fct_rev(population_group)
+  ) %>%
+  arrange(desc(cumulative_poulation)) %>%
+  print()
+```
+
+## Cases data
+
+Let's read in the county data:
+
+```{r}
+us_counties <- 
+  read_csv(path(dir_source, "us-counties.csv"))
+```
+
+For now, let's get the Iowa data, only a few of the columns, and we will create a column to note the type of aggregation ("none" for the county-level data).
+
+```{r}
+iowa_counties_nyt <-
+  us_counties %>%
+  filter(state == "Iowa") %>%
+  select(date, county, cases, deaths) 
+```
+
+```{r}
+iowa_counties_scrape <- 
+  read_html(path(dir_source, "access.html")) %>%
+  html_node("table") %>%
+  html_table(header = TRUE) %>%
+  transmute(
+    date = today(),
+    county = Name,
+    cases = Confirmed,
+    deaths = Deaths
+  ) %>%
+  print()
+```
+
+```{r}
+iowa_counties <- 
+  bind_rows(iowa_counties_nyt, iowa_counties_scrape) %>%
+  distinct() %>% # hacky way to avoid collision between datasets
+  filter(county %in% iowa_county_population$county) %>%
+  group_by(county) %>%
+  arrange(date) %>%
+  mutate(
+    new_cases = cases - lag(cases, default = 0),
+    new_deaths = deaths - lag(deaths, default = 0),
+    new_cases_week_avg = (cases - lag(cases, n = 7, default = 0)) / 7,
+    new_deaths_week_avg = (deaths - lag(deaths, n = 7, default = 0)) / 7,
+    aggregation = "none"
+  ) %>%
+  ungroup() %>%
+  arrange(desc(date), desc(cases)) %>%
+  print()
+```
+
+## Write
+
+```{r}
+write_csv(iowa_counties, path(dir_target, "iowa-counties.csv"))
+```
+
+```{r}
+write_csv(iowa_county_population, path(dir_target, "iowa-county-population.csv"))
+```
+
+
+
+
