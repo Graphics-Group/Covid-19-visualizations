@@ -1,7 +1,7 @@
 COVID-19 Iowa
 ================
 Ian Lyttle
-2020-04-13
+2020-04-18
 
 ``` r
 library("fs")
@@ -22,7 +22,6 @@ library("tidyverse")
     ## x dplyr::lag()      masks stats::lag()
 
 ``` r
-library("readxl")
 library("USAboundaries") # also install_github("ropensci/USAboundariesData")
 library("sf")
 ```
@@ -31,11 +30,10 @@ library("sf")
 
 ``` r
 library("colorspace")
-library("RcppRoll")
 ```
 
 ``` r
-dir_source <- path("data", "download")
+dir_source <- path("data", "wrangle")
 dir_target <- path("data", "iowa")
 
 dir_create(dir_target)
@@ -46,57 +44,38 @@ dir_create(dir_target)
 Let’s read in the county data:
 
 ``` r
-us_counties <- 
-  read_csv(path(dir_source, "us-counties.csv"))
+iowa_counties <- 
+  read_csv(path(dir_source, "iowa-counties.csv")) %>%
+  print()
 ```
 
     ## Parsed with column specification:
     ## cols(
     ##   date = col_date(format = ""),
     ##   county = col_character(),
-    ##   state = col_character(),
-    ##   fips = col_character(),
     ##   cases = col_double(),
-    ##   deaths = col_double()
+    ##   deaths = col_double(),
+    ##   new_cases = col_double(),
+    ##   new_deaths = col_double(),
+    ##   new_cases_week_avg = col_double(),
+    ##   new_deaths_week_avg = col_double(),
+    ##   aggregation = col_character()
     ## )
 
-For now, let’s get the Iowa data, only a few of the columns, and we will
-create a column to note the type of aggregation (“none” for the
-county-level data).
-
-``` r
-iowa_counties <-
-  us_counties %>%
-  filter(state == "Iowa") %>%
-  select(date, county, cases, deaths) %>%
-  group_by(county) %>%
-  arrange(date) %>%
-  mutate(
-    new_cases = cases - lag(cases, default = 0),
-    new_deaths = deaths - lag(deaths, default = 0),
-    new_cases_week_avg = (cases - lag(cases, n = 7, default = 0)) / 7,
-    new_deaths_week_avg = (deaths - lag(deaths, n = 7, default = 0)) / 7,
-    aggregation = "none"
-  ) %>%
-  ungroup() %>%
-  arrange(desc(date), desc(cases)) %>%
-  print()
-```
-
-    ## # A tibble: 1,383 x 9
+    ## # A tibble: 1,874 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-04-12 Linn     243     18         8          6           11.7  
-    ##  2 2020-04-12 Johns…   203      2         9          0           13.9  
-    ##  3 2020-04-12 Polk     177      5        14          0            7.86 
-    ##  4 2020-04-12 Scott    115      1         4          0           10.6  
-    ##  5 2020-04-12 Musca…    96      1         5          0            9    
-    ##  6 2020-04-12 Tama      86      2         9          0            8    
-    ##  7 2020-04-12 Washi…    81      4         2          1            4.57 
-    ##  8 2020-04-12 Louisa    76      0         6          0           10    
-    ##  9 2020-04-12 Black…    47      0         6          0            5    
-    ## 10 2020-04-12 Dallas    37      0         0          0            0.286
-    ## # … with 1,373 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-04-18 Linn     332     25        28          3            13.9 
+    ##  2 2020-04-18 Polk     293     13        16          3            18.6 
+    ##  3 2020-04-18 Johns…   265      3        19          0            10.1 
+    ##  4 2020-04-18 Louisa   177      2         8          1            15.3 
+    ##  5 2020-04-18 Musca…   176      3        13          1            12.1 
+    ##  6 2020-04-18 Black…   166      1        28          0            17.9 
+    ##  7 2020-04-18 Scott    159      3         4          0             6.86
+    ##  8 2020-04-18 Tama     123      6         2          1             6.57
+    ##  9 2020-04-18 Washi…   113      5         4          0             4.86
+    ## 10 2020-04-18 Marsh…    83      0         8          0             7.86
+    ## # … with 1,864 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 Let’s have a quick look at all the counties.
@@ -107,7 +86,7 @@ ggplot(iowa_counties, aes(date, cases)) +
   scale_y_log10()
 ```
 
-![](01-Iowa_files/figure-gfm/county-raw-1.png)<!-- -->
+![](03-Plots_files/figure-gfm/county-raw-1.png)<!-- -->
 
 This plot is not all that informative, except to tell us that we have
 the data we expect.
@@ -125,16 +104,16 @@ iowa_counties_current <-
     ## # A tibble: 81 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-04-12 Linn     243     18         8          6           11.7  
-    ##  2 2020-04-12 Johns…   203      2         9          0           13.9  
-    ##  3 2020-04-12 Polk     177      5        14          0            7.86 
-    ##  4 2020-04-12 Scott    115      1         4          0           10.6  
-    ##  5 2020-04-12 Musca…    96      1         5          0            9    
-    ##  6 2020-04-12 Tama      86      2         9          0            8    
-    ##  7 2020-04-12 Washi…    81      4         2          1            4.57 
-    ##  8 2020-04-12 Louisa    76      0         6          0           10    
-    ##  9 2020-04-12 Black…    47      0         6          0            5    
-    ## 10 2020-04-12 Dallas    37      0         0          0            0.286
+    ##  1 2020-04-18 Linn     332     25        28          3            13.9 
+    ##  2 2020-04-18 Polk     293     13        16          3            18.6 
+    ##  3 2020-04-18 Johns…   265      3        19          0            10.1 
+    ##  4 2020-04-18 Louisa   177      2         8          1            15.3 
+    ##  5 2020-04-18 Musca…   176      3        13          1            12.1 
+    ##  6 2020-04-18 Black…   166      1        28          0            17.9 
+    ##  7 2020-04-18 Scott    159      3         4          0             6.86
+    ##  8 2020-04-18 Tama     123      6         2          1             6.57
+    ##  9 2020-04-18 Washi…   113      5         4          0             4.86
+    ## 10 2020-04-18 Marsh…    83      0         8          0             7.86
     ## # … with 71 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
@@ -155,7 +134,7 @@ ggplot(iowa_counties_current) +
   ) 
 ```
 
-![](01-Iowa_files/figure-gfm/county-histogram-1.png)<!-- -->
+![](03-Plots_files/figure-gfm/county-histogram-1.png)<!-- -->
 
 On the right, we see Johnson, Polk, and Linn counties, with the greatest
 number of reported cases. On the left, we see a lot of counties with
@@ -176,8 +155,8 @@ counties_large <-
 counties_large
 ```
 
-    ## [1] "Linn"       "Johnson"    "Polk"       "Scott"      "Muscatine" 
-    ## [6] "Tama"       "Washington" "Louisa"
+    ##  [1] "Linn"       "Polk"       "Johnson"    "Louisa"     "Muscatine" 
+    ##  [6] "Black Hawk" "Scott"      "Tama"       "Washington" "Marshall"
 
 In addition to compiliing the data for the counties with large numbers
 of cases, we also create aggregeted datasets that show:
@@ -205,20 +184,20 @@ iowa_total <-
   print()
 ```
 
-    ## # A tibble: 36 x 9
+    ## # A tibble: 42 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <fct>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-04-12 <NA>    1587     41        77          7            103. 
-    ##  2 2020-04-11 <NA>    1510     34       122          3            103. 
-    ##  3 2020-04-10 <NA>    1388     31       118          4             98.4
-    ##  4 2020-04-09 <NA>    1270     27       125          0             93.7
-    ##  5 2020-04-08 <NA>    1145     27        97          1             85.3
-    ##  6 2020-04-07 <NA>    1048     26       102          1             78.6
-    ##  7 2020-04-06 <NA>     946     25        78          3             74.6
-    ##  8 2020-04-05 <NA>     868     22        82         11             76  
-    ##  9 2020-04-04 <NA>     786     11        87          0             69.7
-    ## 10 2020-04-03 <NA>     699     11        85          0             66.1
-    ## # … with 26 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-04-18 <NA>    2509     74       181         10            143. 
+    ##  2 2020-04-17 <NA>    2331     64       190          4            135. 
+    ##  3 2020-04-16 <NA>    2141     60       146          7            124. 
+    ##  4 2020-04-15 <NA>    1995     53        96          9            121. 
+    ##  5 2020-04-14 <NA>    1899     44       189          0            122. 
+    ##  6 2020-04-13 <NA>    1710     44       123          3            109. 
+    ##  7 2020-04-12 <NA>    1587     41        77          7            103. 
+    ##  8 2020-04-11 <NA>    1510     34       122          3            103. 
+    ##  9 2020-04-10 <NA>    1388     31       118          4             98.4
+    ## 10 2020-04-09 <NA>    1270     27       125          0             93.7
+    ## # … with 32 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 ``` r
@@ -240,20 +219,20 @@ iowa_remainder <-
   print()
 ```
 
-    ## # A tibble: 35 x 9
+    ## # A tibble: 41 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <fct>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-04-12 <NA>     510      8        20          0             27.1
-    ##  2 2020-04-11 <NA>     490      8        34          2             27.1
-    ##  3 2020-04-10 <NA>     456      6        39          0             25.3
-    ##  4 2020-04-09 <NA>     417      6        26          0             24.6
-    ##  5 2020-04-08 <NA>     391      6        26          0             25.9
-    ##  6 2020-04-07 <NA>     365      6        25          1             25  
-    ##  7 2020-04-06 <NA>     340      5        20          0             25  
-    ##  8 2020-04-05 <NA>     320      5        20          2             26.1
-    ##  9 2020-04-04 <NA>     300      3        21          0             25.4
-    ## 10 2020-04-03 <NA>     279      3        34          0             26  
-    ## # … with 25 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-04-18 <NA>     622     13        51          1             29.1
+    ##  2 2020-04-17 <NA>     574     12        41          0             24.7
+    ##  3 2020-04-16 <NA>     533     12        33          1             22.1
+    ##  4 2020-04-15 <NA>     500     11        13          2             20.4
+    ##  5 2020-04-14 <NA>     487      9        28          0             21.6
+    ##  6 2020-04-13 <NA>     459      9        27          1             20.4
+    ##  7 2020-04-12 <NA>     432      8        11          0             19.1
+    ##  8 2020-04-11 <NA>     421      8        20          2             20.1
+    ##  9 2020-04-10 <NA>     401      6        23          0             20  
+    ## 10 2020-04-09 <NA>     378      6        21          0             21.4
+    ## # … with 31 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 ``` r
@@ -494,37 +473,24 @@ counties into four groups, ordered by county-population, such that each
 *group* of counties contains approximately the same population.
 
 ``` r
-iowa_county_population <-
-  read_xls(
-    path = path(dir_source, "iowa_counties_population.xls"), 
-    sheet = "Counties", 
-    range = "A7:M107"
-  ) %>%
-  transmute(
-    fips = Fips,
-    county = str_replace(Area, " County, Iowa", ""),
-    population = `2019`
-  ) %>%
-  filter(fips > 19) %>%
-  arrange(population) %>%
-  mutate(
-    cumulative_poulation = cumsum(population),
-    quartile_population = cumulative_poulation/max(cumulative_poulation),
-    population_group = cut(
-      quartile_population, 
-      breaks = c(0, 0.25, 0.51, 0.78, 1),
-      labels = c("small", "mid-small", "mid-large", "large")
-      # labels = c("FT-AA", "PW-HN", "ST-DA", "PK-LN")
-    ),
-    population_group = fct_rev(population_group)
-  ) %>%
-  arrange(desc(cumulative_poulation)) %>%
+iowa_county_population <- 
+  read_csv(path(dir_source, "iowa-county-population.csv")) %>%
   print()
 ```
 
+    ## Parsed with column specification:
+    ## cols(
+    ##   fips = col_double(),
+    ##   county = col_character(),
+    ##   population = col_double(),
+    ##   cumulative_poulation = col_double(),
+    ##   quartile_population = col_double(),
+    ##   population_group = col_character()
+    ## )
+
     ## # A tibble: 99 x 6
     ##     fips county   population cumulative_poula… quartile_popula… population_group
-    ##    <dbl> <chr>         <dbl>             <dbl>            <dbl> <fct>           
+    ##    <dbl> <chr>         <dbl>             <dbl>            <dbl> <chr>           
     ##  1 19153 Polk         490161           3155070            1     large           
     ##  2 19113 Linn         226706           2664909            0.845 large           
     ##  3 19163 Scott        172943           2438203            0.773 mid-large       
@@ -612,11 +578,11 @@ iowa_counts <-
 
     ## # A tibble: 4 x 5
     ##   population_group counties population cases deaths
-    ##   <fct>               <int>      <dbl> <dbl>  <dbl>
-    ## 1 large                   2     716867   420     23
-    ## 2 mid-large               7     846299   462      4
-    ## 3 mid-small              24     812518   382      7
-    ## 4 small                  66     779386   323      7
+    ##   <chr>               <int>      <dbl> <dbl>  <dbl>
+    ## 1 large                   2     716867   625     38
+    ## 2 mid-large               7     846299   730      8
+    ## 3 mid-small              24     812518   648     11
+    ## 4 small                  66     779386   506     17
 
 ``` r
 vars_count <- c("counties", "population", "cases", "deaths")
@@ -636,23 +602,23 @@ iowa_counts_tall <-
 
     ## # A tibble: 16 x 3
     ##    population_group category    count
-    ##    <fct>            <fct>       <dbl>
+    ##    <chr>            <fct>       <dbl>
     ##  1 large            counties        2
     ##  2 large            population 716867
-    ##  3 large            cases         420
-    ##  4 large            deaths         23
+    ##  3 large            cases         625
+    ##  4 large            deaths         38
     ##  5 mid-large        counties        7
     ##  6 mid-large        population 846299
-    ##  7 mid-large        cases         462
-    ##  8 mid-large        deaths          4
+    ##  7 mid-large        cases         730
+    ##  8 mid-large        deaths          8
     ##  9 mid-small        counties       24
     ## 10 mid-small        population 812518
-    ## 11 mid-small        cases         382
-    ## 12 mid-small        deaths          7
+    ## 11 mid-small        cases         648
+    ## 12 mid-small        deaths         11
     ## 13 small            counties       66
     ## 14 small            population 779386
-    ## 15 small            cases         323
-    ## 16 small            deaths          7
+    ## 15 small            cases         506
+    ## 16 small            deaths         17
 
 ``` r
 plot_iowa_proportions <-
@@ -829,30 +795,7 @@ plot_new_cases_group_ft <-
 plot_cases
 ```
 
-![](01-Iowa_files/figure-gfm/cases-county-1.png)<!-- -->
-
-To be *very* clear, I am not an epidemiologist, so it is entirely
-possible that I am missing some important nuance here.
-
-Assuming that testing standards do not vary (too much) across the state,
-and remain relatively constant over time, here’s what I’m seeing from
-this plot:
-
-  - Considering the state total, cases are doubling every seven-or-so
-    days.
-
-  - The rate-of-growth for “all other counties” is tracking the
-    rate-of-growth for the state, as a whole. This appears to be the
-    case for the last two weeks.
-
-Opinion/conjecture:
-
-  - What we are seeing reported is a sense of what was *actually*
-    happening a week or so previous.
-
-  - By saying that we, as a state, don’t need to be doing anything
-    differently, we are also saying that we are prepared to accept the
-    doubling of cases every week days for the forseeable future.
+![](03-Plots_files/figure-gfm/cases-county-1.png)<!-- -->
 
 For another view, here’s an [FT-style
 chart](https://www.ft.com/coronavirus-latest):
@@ -861,52 +804,52 @@ chart](https://www.ft.com/coronavirus-latest):
 plot_cases_ft
 ```
 
-![](01-Iowa_files/figure-gfm/cases-county-ft-1.png)<!-- -->
+![](03-Plots_files/figure-gfm/cases-county-ft-1.png)<!-- -->
 
 ``` r
 plot_new_cases_week_avg
 ```
 
-![](01-Iowa_files/figure-gfm/new-cases-county-1.png)<!-- -->
+![](03-Plots_files/figure-gfm/new-cases-county-1.png)<!-- -->
 
 ``` r
 plot_new_cases_week_avg_ft
 ```
 
-![](01-Iowa_files/figure-gfm/new-cases-county-ft-1.png)<!-- -->
+![](03-Plots_files/figure-gfm/new-cases-county-ft-1.png)<!-- -->
 
 ``` r
 plot_iowa_map_group
 ```
 
-![](01-Iowa_files/figure-gfm/iowa-map-1.png)<!-- -->
+![](03-Plots_files/figure-gfm/iowa-map-1.png)<!-- -->
 
 ``` r
 plot_iowa_proportions
 ```
 
-![](01-Iowa_files/figure-gfm/iowa-proportions-1.png)<!-- -->
+![](03-Plots_files/figure-gfm/iowa-proportions-1.png)<!-- -->
 
 ``` r
 plot_cases_group
 ```
 
-![](01-Iowa_files/figure-gfm/cases-group-1.png)<!-- -->
+![](03-Plots_files/figure-gfm/cases-group-1.png)<!-- -->
 
 ``` r
 plot_new_cases_group
 ```
 
-![](01-Iowa_files/figure-gfm/new-cases-group-1.png)<!-- -->
+![](03-Plots_files/figure-gfm/new-cases-group-1.png)<!-- -->
 
 ``` r
 plot_cases_group_ft
 ```
 
-![](01-Iowa_files/figure-gfm/cases-group-ft-1.png)<!-- -->
+![](03-Plots_files/figure-gfm/cases-group-ft-1.png)<!-- -->
 
 ``` r
 plot_new_cases_group_ft
 ```
 
-![](01-Iowa_files/figure-gfm/new-cases-group-ft-1.png)<!-- -->
+![](03-Plots_files/figure-gfm/new-cases-group-ft-1.png)<!-- -->

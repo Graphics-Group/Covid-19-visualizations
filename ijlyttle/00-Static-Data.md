@@ -1,9 +1,10 @@
-Data Download
+Static Data
 ================
 Ian Lyttle
-2020-04-13
+2020-04-18
 
-The purpose of this document is to download the datasets used.
+The purpose of this document is to download the datasets used from
+static sources.
 
 ``` r
 library("fs")
@@ -29,6 +30,8 @@ download.file(
   path(dir_target, "us-states.csv")
 )
 ```
+
+We download a spreadsheet that contains county-population data.
 
 ``` r
 # we don't need to download this *every* time

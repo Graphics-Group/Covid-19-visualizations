@@ -1,11 +1,11 @@
 ---
-title: "Data Download"
+title: "Static Data"
 author: "Ian Lyttle"
 date: "`r Sys.Date()`"
 output: github_document
 ---
 
-The purpose of this document is to download the datasets used.
+The purpose of this document is to download the datasets used from static sources.
 
 ```{r}
 library("fs")
@@ -32,6 +32,8 @@ download.file(
 )
 ```
 
+We download a spreadsheet that contains county-population data.
+
 ```{r}
 # we don't need to download this *every* time
 file_excel <- path(dir_target, "iowa_counties_population.xls")
@@ -43,3 +45,5 @@ if (!file_exists(file_excel)) {
   ) 
 }
 ```
+
+
