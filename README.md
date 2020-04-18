@@ -22,4 +22,7 @@ International License](https://creativecommons.org/licenses/by/4.0/).
 
 ## Examples
 
+This chart shows the number of cases in Iowa - fill color shows recent
+trend (last week) of the number of days in which cases double.
+
 ![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
