@@ -70,7 +70,7 @@ Focusing on Johnson county, I see three waves of increases:
 
 Another question I want to ask deals with differences between large
 counties and and small counties. My idea was to split the counties into
-groups, according to population. Eacg group of counties has
+groups, according to population. Each group of counties has
 approximately the same
 population:
 
