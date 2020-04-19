@@ -26,7 +26,20 @@ This chart shows the number of cases in Iowa - fill color shows recent trend (la
 ```{r echo=FALSE, warning = FALSE, message=FALSE}
 library(tidyverse)
 library(lubridate)
-nyt <- read.csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv", stringsAsFactors = FALSE)
+
+# nyt <- read.csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv", stringsAsFactors = FALSE)
+
+# test integration of latest data
+nyt <- 
+  read_csv("ijlyttle/data/wrangle/iowa-counties.csv") %>%
+  transmute(
+    date, 
+    county,
+    state = "Iowa",
+    cases,
+    deaths
+  )
+
 nyt$date <- ymd(nyt$date)
 logs <- data.frame(
   x = 0:40)
