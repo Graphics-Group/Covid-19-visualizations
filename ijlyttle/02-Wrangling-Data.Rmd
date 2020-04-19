@@ -74,13 +74,19 @@ iowa_counties_nyt <-
 ```
 
 ```{r}
+date_scrape <- 
+  file_info(path(dir_source, "access.html")) %>%
+  `[[`("change_time") %>% 
+  max() %>%
+  as.Date()
+
 iowa_counties_scrape <- 
   read_html(path(dir_source, "access.html")) %>%
   html_node("table") %>%
   html_table(header = TRUE) %>%
   transmute(
-    date = today(),
-    county = Name,
+    date = date_scrape,
+    county = County,
     cases = Confirmed,
     deaths = Deaths
   ) %>%
@@ -88,9 +94,16 @@ iowa_counties_scrape <-
 ```
 
 ```{r}
+iowa_counties_combined <- iowa_counties_nyt
+
+if (date_scrape > max(iowa_counties_nyt$date)) {
+  iowa_counties_combined <- bind_rows(iowa_counties_nyt, iowa_counties_scrape)
+}
+```
+
+```{r}
 iowa_counties <- 
-  bind_rows(iowa_counties_nyt, iowa_counties_scrape) %>%
-  distinct() %>% # hacky way to avoid collision between datasets
+  iowa_counties_combined %>%
   filter(county %in% iowa_county_population$county) %>%
   group_by(county) %>%
   arrange(date) %>%
