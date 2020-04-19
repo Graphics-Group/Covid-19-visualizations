@@ -46,7 +46,10 @@ charts](https://www.ft.com/coronavirus-latest):
 <img src="ijlyttle/03-Plots_files/figure-gfm/cases-county-ft-1.png" width="864" />
 
 What I’m seeing here is that counties race out of the gate, then settle
-down to a doubling-rate between a week to two-weeks.
+down to a doubling-rate between a week to two-weeks. This was the case
+until April 19, where I am seeing an across-the-board increase. Almost
+400 new cases reported on Apr. 19, doubling previous record - I will be
+interested to learn if there has been a change in testing protocol.
 
 Again, following the style of FT, we can look at the seven-day rolling
 average of new
@@ -54,7 +57,8 @@ cases:
 
 <img src="ijlyttle/03-Plots_files/figure-gfm/new-cases-county-ft-1.png" width="864" />
 
-As of 2020-04-18, I’m not seeing a peak in new-cases being approached.
+As of 2020-04-19, I am **not** seeing a peak in new-cases being
+approached.
 
 Focusing on Johnson county, I see three waves of increases:
 
@@ -62,8 +66,7 @@ Focusing on Johnson county, I see three waves of increases:
   - days 7-23: the establishment of community-spread
   - days 23-38: another rise perhaps associated with spring-breakers
     returning
-
-Starting at day 38, another uptick?
+  - days 38- , another uptick.
 
 Another question I want to ask deals with differences between large
 counties and and small counties. My idea was to split the counties into
@@ -99,5 +102,6 @@ county-group. It could be that larger counties have more long-term care
 facilites and that smaller counties have more meat-packing plants.
 
 This is my opinion, but rather than explaining using extenuating
-circumstances, I think the call to action is that we *all* have a role
-to play in reducing the spread.
+circumstances, I think the call to action is that we need to do more to
+protect our vulneraablities, including packing plants, long-term care,
+hopsitals. We *all* have a role to play in reducing the spread.
