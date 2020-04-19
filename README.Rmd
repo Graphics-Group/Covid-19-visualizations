@@ -153,7 +153,7 @@ Focusing on Johnson county, I see three waves of increases:
 - days 38- , another uptick.
 
 
-Another question I want to ask deals with differences between large counties and and small counties. My idea was to split the counties into groups, according to population. Eacg group of counties has approximately the same population:
+Another question I want to ask deals with differences between large counties and and small counties. My idea was to split the counties into groups, according to population. Each group of counties has approximately the same population:
 
 ```{r echo=FALSE}
 incl("iowa-map-1.png")
