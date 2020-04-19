@@ -48,8 +48,9 @@ charts](https://www.ft.com/coronavirus-latest):
 What I’m seeing here is that counties race out of the gate, then settle
 down to a doubling-rate between a week to two-weeks. This was the case
 until April 19, where I am seeing an across-the-board increase. Almost
-400 new cases reported on Apr. 19, doubling previous record - I will be
-interested to learn if there has been a change in testing protocol.
+400 new cases reported on Apr. 19, doubling the previous record.
+According to the governor, roughly two-thirds of these 400 cases are
+associated with targeted testing.
 
 Again, following the style of FT, we can look at the seven-day rolling
 average of new
@@ -60,13 +61,13 @@ cases:
 As of 2020-04-19, I am **not** seeing a peak in new-cases being
 approached.
 
-Focusing on Johnson county, I see three waves of increases:
+Focusing on Johnson county, I see four waves of increases:
 
   - days 0-7: the initial cases associated with the Egyptian cruise
   - days 7-23: the establishment of community-spread
   - days 23-38: another rise perhaps associated with spring-breakers
     returning
-  - days 38- , another uptick.
+  - days 38- : another uptick
 
 Another question I want to ask deals with differences between large
 counties and and small counties. My idea was to split the counties into
@@ -103,5 +104,6 @@ facilites and that smaller counties have more meat-packing plants.
 
 This is my opinion, but rather than explaining using extenuating
 circumstances, I think the call to action is that we need to do more to
-protect our vulneraablities, including packing plants, long-term care,
-hopsitals. We *all* have a role to play in reducing the spread.
+protect our vulnerablities, including meat-packing plants, long-term
+care facilities, and hopsitals. We *all* have a role to play in reducing
+the spread.
