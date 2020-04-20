@@ -50,8 +50,8 @@ down to a doubling-rate between a week to two-weeks. This was the case
 until April 19, where I am seeing an across-the-board increase. Almost
 400 new cases reported on Apr. 19, doubling the previous record.
 According to the governor, roughly two-thirds of these 400 cases are
-associated with targeted testing at meat-packing plants (Louisa and
-Black Hawk).
+associated with targeted testing at meat-packing plants (Louisa, Tama,
+and Black Hawk).
 
 Again, following the style of FT, we can look at the seven-day rolling
 average of new
@@ -59,7 +59,7 @@ cases:
 
 <img src="ijlyttle/03-Plots_files/figure-gfm/new-cases-county-ft-1.png" width="864" />
 
-As of 2020-04-19, I am **not** seeing a peak in new-cases being
+As of 2020-04-20, I am **not** seeing a peak in new-cases being
 approached.
 
 Focusing on Johnson County, I see four waves of increases:
