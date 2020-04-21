@@ -123,7 +123,7 @@ counties_map %>%
   scale_colour_manual(values=c("white", "grey10"), 
                       na.value="grey10", guide=NULL) +
   geom_polygon(aes(group=group), data = map_data("state") %>% filter(region==state), colour="grey30", fill=NA, size=0.25)  +
-  ggtitle(paste0("Cases in Iowa's counties as of ", max(nyt$date)))
+  ggtitle(paste0("Cases in Iowa's counties as of ", max(nyt$date))) 
 ```
 
 Here are a few of the charts, focusing on Iowa, that Ian has made, using the [NYT data](https://github.com/nytimes/covid-19-data), [current data](https://coronavirus.iowa.gov/pages/access) from the state, and [county-population data](https://www.icip.iastate.edu/tables/population/counties-estimates).
