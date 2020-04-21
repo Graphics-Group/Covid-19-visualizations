@@ -401,7 +401,7 @@ plot_new_cases_week_avg_ft <-
   labs(
     x = glue("days since {params$threshold_index_new_cases} new cases"),
     y = "number of new reported cases",
-    title = glue("Iowa: COVID-19 cumulative-case trajectories as of {max(data_combined_index$date)}"),
+    title = glue("Iowa: COVID-19 new-case (7-day rolling average) trajectories as of {max(data_combined_index$date)}"),
     subtitle = "Includes counties with most reported cases, also aggregations",
     caption = params$nyt_citation
   )
