@@ -47,7 +47,8 @@ logs <- logs %>% mutate(
   two = 1/2*log10(2)*x + 10,
   three = 1/3*log10(2)*x + 10,
   four = 1/4*log10(2)*x + 10,
-  week = 1/7*log10(2)*x + 10
+  week = 1/7*log10(2)*x + 10,
+  twoweek = 1/14*log10(2)*x + 10
 )
 
 
@@ -64,7 +65,7 @@ nyt <- nyt %>%
     cases_lastweek = ifelse(length(cases[date==lastweek])==1, cases[date==lastweek], 10),
     ratio_lastweek = (log10(max(cases))-log10(cases_lastweek))/as.numeric(max(date)-lastweek),
     ratio_lastweek = ifelse(max(cases) < 10, NA, ratio_lastweek),
-    doubles = findInterval(ratio_lastweek, c(0, 1/7, 1/4, 1/2, 1) * log10(2), 
+    doubles = findInterval(ratio_lastweek, c(0, 1/14, 1/7, 1/4, 1/2, 1) * log10(2), 
                            rightmost.closed = TRUE, all.inside = FALSE,
                            left.open = TRUE),
     cum_cases = max(cases)
@@ -72,7 +73,7 @@ nyt <- nyt %>%
 
 nyt$doubles = factor(nyt$doubles)
 nyt$doubles = fct_lump(nyt$doubles, n = 3)
-levels(nyt$doubles) <- c("one week or more", "4 days to a week", "2 to 4 days", "fewer than 2 days")
+levels(nyt$doubles) <- c("two weeks or more", "1-2 weeks", "4 days to a week", "2 to 4 days", "fewer than 2 days")
 
 nytmap <- nyt %>% 
   ungroup(state, county) %>% 
@@ -104,7 +105,7 @@ centers <- counties %>%
       ifelse(is.na(cum_cases), shorts, sprintf("%s\n%d", shorts, cum_cases))
   )
 
-colors <- RColorBrewer::brewer.pal(n=4, name="OrRd")
+colors <- RColorBrewer::brewer.pal(n=5, name="OrRd")
 counties_map <- counties %>% left_join(nytmap, by = c("region", "subregion")) %>%
   filter(region=="iowa") %>%
   arrange(order) 
