@@ -80,17 +80,23 @@ date_scrape <-
   max() %>%
   as.Date()
 
+html_scrape <- 
+  read_html(path(dir_source, "access.html")) 
+
+iowa_counties_content <-
+  html_scrape %>%
+  html_nodes("td") %>%
+  map_chr(html_text)
+
+ind_counties <- which(iowa_counties_content %in% iowa_county_population$county)
+
 iowa_counties_scrape <- 
-  read_html(path(dir_source, "access.html")) %>%
-  html_node("table") %>%
-  html_table(header = TRUE) %>%
-  transmute(
+  tibble(
     date = date_scrape,
-    county = County,
-    cases = Confirmed,
-    deaths = Deaths
-  ) %>%
-  print()
+    county = iowa_counties_content[ind_counties],
+    cases = as.numeric(iowa_counties_content[ind_counties + 1]),
+    deaths = as.numeric(iowa_counties_content[ind_counties + 2])
+  )
 ```
 
 ```{r}

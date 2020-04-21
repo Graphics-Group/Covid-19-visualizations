@@ -1,7 +1,7 @@
 Wrangling Data
 ================
 Ian Lyttle
-2020-04-20
+2020-04-21
 
 The purpose of this document is to wrangle the data into useful forms.
 We will write out two data frames: `iowa_counties` and
@@ -12,14 +12,14 @@ library("fs")
 library("tidyverse")
 ```
 
-    ## ── Attaching packages ───────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+    ## ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 
     ## ✓ ggplot2 3.3.0          ✓ purrr   0.3.3     
     ## ✓ tibble  2.1.3          ✓ dplyr   0.8.4     
     ## ✓ tidyr   1.0.0          ✓ stringr 1.4.0     
     ## ✓ readr   1.3.1.9000     ✓ forcats 0.4.0
 
-    ## ── Conflicts ──────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -142,103 +142,24 @@ date_scrape <-
   max() %>%
   as.Date()
 
-iowa_counties_scrape <- 
-  read_html(path(dir_source, "access.html")) %>%
-  html_node("table") %>%
-  html_table(header = TRUE) %>%
-  transmute(
-    date = date_scrape,
-    county = County,
-    cases = Confirmed,
-    deaths = Deaths
-  ) %>%
-  print()
-```
+html_scrape <- 
+  read_html(path(dir_source, "access.html")) 
 
-    ##          date              county cases deaths
-    ## 1  2020-04-20                Linn   409     27
-    ## 2  2020-04-20                Polk   387     13
-    ## 3  2020-04-20             Johnson   303      3
-    ## 4  2020-04-20          Black Hawk   259      2
-    ## 5  2020-04-20           Muscatine   218      4
-    ## 6  2020-04-20              Louisa   215      2
-    ## 7  2020-04-20                Tama   197      6
-    ## 8  2020-04-20            Marshall   173      0
-    ## 9  2020-04-20               Scott   171      3
-    ## 10 2020-04-20          Washington   121      5
-    ## 11 2020-04-20              Dallas    52      0
-    ## 12 2020-04-20             Dubuque    46      1
-    ## 13 2020-04-20            Woodbury    44      0
-    ## 14 2020-04-20             Clinton    42      0
-    ## 15 2020-04-20              Jasper    42      0
-    ## 16 2020-04-20           Allamakee    40      3
-    ## 17 2020-04-20              Bremer    28      0
-    ## 18 2020-04-20               Henry    27      1
-    ## 19 2020-04-20               Cedar    26      0
-    ## 20 2020-04-20              Benton    23      1
-    ## 21 2020-04-20               Story    20      0
-    ## 22 2020-04-20              Warren    20      0
-    ## 23 2020-04-20       Pottawattamie    18      1
-    ## 24 2020-04-20               Jones    15      0
-    ## 25 2020-04-20         Cerro Gordo    14      0
-    ## 26 2020-04-20            Harrison    14      0
-    ## 27 2020-04-20                Iowa    13      0
-    ## 28 2020-04-20           Poweshiek    13      1
-    ## 29 2020-04-20          Des Moines    13      0
-    ## 30 2020-04-20            Buchanan    11      0
-    ## 31 2020-04-20              Shelby     9      0
-    ## 32 2020-04-20            Plymouth     8      0
-    ## 33 2020-04-20             Mahaska     8      1
-    ## 34 2020-04-20           Van Buren     8      0
-    ## 35 2020-04-20               Sioux     7      0
-    ## 36 2020-04-20             Clayton     7      1
-    ## 37 2020-04-20              Monona     7      0
-    ## 38 2020-04-20          Winneshiek     6      0
-    ## 39 2020-04-20             Fayette     6      0
-    ## 40 2020-04-20            Crawford     6      1
-    ## 41 2020-04-20               Boone     6      0
-    ## 42 2020-04-20           Jefferson     6      0
-    ## 43 2020-04-20             Wapello     6      0
-    ## 44 2020-04-20                Lyon     5      0
-    ## 45 2020-04-20              Grundy     5      0
-    ## 46 2020-04-20             Jackson     5      0
-    ## 47 2020-04-20              Marion     5      0
-    ## 48 2020-04-20              Howard     4      0
-    ## 49 2020-04-20             Webster     4      0
-    ## 50 2020-04-20             Guthrie     4      0
-    ## 51 2020-04-20                Page     4      0
-    ## 52 2020-04-20             Osceola     3      0
-    ## 53 2020-04-20              Obrien     3      0
-    ## 54 2020-04-20                Clay     3      0
-    ## 55 2020-04-20             Hancock     3      0
-    ## 56 2020-04-20           Chickasaw     3      0
-    ## 57 2020-04-20              Hardin     3      0
-    ## 58 2020-04-20              Keokuk     3      0
-    ## 59 2020-04-20             Madison     3      1
-    ## 60 2020-04-20                 Lee     3      0
-    ## 61 2020-04-20           Winnebago     2      0
-    ## 62 2020-04-20            Mitchell     2      0
-    ## 63 2020-04-20         Buena Vista     2      0
-    ## 64 2020-04-20            Delaware     2      0
-    ## 65 2020-04-20            Hamilton     2      0
-    ## 66 2020-04-20               Mills     2      0
-    ## 67 2020-04-20              Clarke     2      0
-    ## 68 2020-04-20           Appanoose     2      2
-    ## 69 2020-04-20 County Info Pending     2     NA
-    ## 70 2020-04-20           Dickinson     1      0
-    ## 71 2020-04-20             Kossuth     1      0
-    ## 72 2020-04-20               Worth     1      0
-    ## 73 2020-04-20              Wright     1      0
-    ## 74 2020-04-20            Franklin     1      0
-    ## 75 2020-04-20              Butler     1      0
-    ## 76 2020-04-20             Carroll     1      0
-    ## 77 2020-04-20              Greene     1      0
-    ## 78 2020-04-20             Audubon     1      0
-    ## 79 2020-04-20                Cass     1      0
-    ## 80 2020-04-20               Adair     1      0
-    ## 81 2020-04-20          Montgomery     1      0
-    ## 82 2020-04-20               Union     1      0
-    ## 83 2020-04-20              Taylor     1      0
+iowa_counties_content <-
+  html_scrape %>%
+  html_nodes("td") %>%
+  map_chr(html_text)
+
+ind_counties <- which(iowa_counties_content %in% iowa_county_population$county)
+
+iowa_counties_scrape <- 
+  tibble(
+    date = date_scrape,
+    county = iowa_counties_content[ind_counties],
+    cases = as.numeric(iowa_counties_content[ind_counties + 1]),
+    deaths = as.numeric(iowa_counties_content[ind_counties + 2])
+  )
+```
 
 ``` r
 iowa_counties_combined <- iowa_counties_nyt
@@ -266,20 +187,20 @@ iowa_counties <-
   print()
 ```
 
-    ## # A tibble: 2,038 x 9
+    ## # A tibble: 2,137 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-04-20 Linn     409     27        12          2            21.6 
-    ##  2 2020-04-20 Polk     387     13        54          0            27.4 
-    ##  3 2020-04-20 Johns…   303      3         9          0            13.3 
-    ##  4 2020-04-20 Black…   259      2        67          1            28.1 
-    ##  5 2020-04-20 Musca…   218      4        11          0            16.6 
-    ##  6 2020-04-20 Louisa   215      2         2          0            19.4 
-    ##  7 2020-04-20 Tama     197      6         9          0            13.7 
-    ##  8 2020-04-20 Marsh…   173      0        18          0            19.4 
-    ##  9 2020-04-20 Scott    171      3        11          0             7.57
-    ## 10 2020-04-20 Washi…   121      5         1          0             4.57
-    ## # … with 2,028 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-04-21 Linn     460     28        49          1            27.9 
+    ##  2 2020-04-21 Polk     415     16        28          3            28.9 
+    ##  3 2020-04-21 Johns…   372      3        61          0            22.3 
+    ##  4 2020-04-21 Black…   366      2       107          0            41.1 
+    ##  5 2020-04-21 Louisa   242      2        26          0            13.3 
+    ##  6 2020-04-21 Musca…   230      4        12          0            15.4 
+    ##  7 2020-04-21 Marsh…   224      0        51          0            26   
+    ##  8 2020-04-21 Tama     223      6        25          0            16.4 
+    ##  9 2020-04-21 Scott    179      3         7          0             7.86
+    ## 10 2020-04-21 Washi…   124      5         1          0             4.14
+    ## # … with 2,127 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 ## Write
