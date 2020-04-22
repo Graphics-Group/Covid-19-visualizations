@@ -1,7 +1,7 @@
 Wrangling Data
 ================
 Ian Lyttle
-2020-04-21
+2020-04-22
 
 The purpose of this document is to wrangle the data into useful forms.
 We will write out two data frames: `iowa_counties` and
@@ -12,14 +12,14 @@ library("fs")
 library("tidyverse")
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+    ## ── Attaching packages ──────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 
     ## ✓ ggplot2 3.3.0          ✓ purrr   0.3.3     
     ## ✓ tibble  2.1.3          ✓ dplyr   0.8.4     
     ## ✓ tidyr   1.0.0          ✓ stringr 1.4.0     
     ## ✓ readr   1.3.1.9000     ✓ forcats 0.4.0
 
-    ## ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ─────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -190,16 +190,16 @@ iowa_counties <-
     ## # A tibble: 2,137 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-04-21 Linn     460     28        49          1            27.9 
-    ##  2 2020-04-21 Polk     415     16        28          3            28.9 
-    ##  3 2020-04-21 Johns…   372      3        61          0            22.3 
-    ##  4 2020-04-21 Black…   366      2       107          0            41.1 
-    ##  5 2020-04-21 Louisa   242      2        26          0            13.3 
-    ##  6 2020-04-21 Musca…   230      4        12          0            15.4 
-    ##  7 2020-04-21 Marsh…   224      0        51          0            26   
-    ##  8 2020-04-21 Tama     223      6        25          0            16.4 
-    ##  9 2020-04-21 Scott    179      3         7          0             7.86
-    ## 10 2020-04-21 Washi…   124      5         1          0             4.14
+    ##  1 2020-04-22 Linn     466     29        55          2            28.7 
+    ##  2 2020-04-22 Polk     437     16        50          3            32   
+    ##  3 2020-04-22 Johns…   388      3        77          0            24.6 
+    ##  4 2020-04-22 Black…   379      4       120          2            43   
+    ##  5 2020-04-22 Louisa   248      2        32          0            14.1 
+    ##  6 2020-04-22 Musca…   240      6        22          2            16.9 
+    ##  7 2020-04-22 Marsh…   239      0        66          0            28.1 
+    ##  8 2020-04-22 Tama     225      7        27          1            16.7 
+    ##  9 2020-04-22 Scott    182      3        10          0             8.29
+    ## 10 2020-04-22 Washi…   124      5         1          0             4.14
     ## # … with 2,127 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 

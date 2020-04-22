@@ -294,7 +294,7 @@ plot_cases_ft <-
     nudge_y = 0.05,
     color = "grey80"
   ) +
-  geom_line(aes(color = county, linetype = aggregation)) +
+  geom_line(aes(color = county, linetype = aggregation), alpha = 0.8) +
   geom_point(
     data = . %>% filter(date == max(date)),
     aes(color = county),
@@ -326,7 +326,7 @@ plot_cases_ft <-
     size = 3,
     show.legend = FALSE
   ) +
-  scale_x_continuous(breaks = f_break, expand = expand_scale(add = c(0, 3))) +
+  scale_x_continuous(breaks = f_break, expand = expansion(add = c(0, 3))) +
   scale_y_log10(
     sec.axis = dup_axis(name = NULL)
   ) + 
@@ -386,7 +386,7 @@ plot_new_cases_week_avg_ft <-
     size = 3,
     show.legend = FALSE
   ) +
-  scale_x_continuous(breaks = f_break, expand = expand_scale(add = c(0, 3.5))) +
+  scale_x_continuous(breaks = f_break, expand = expansion(add = c(0, 3.5))) +
   scale_y_log10(
     sec.axis = dup_axis(name = NULL)
   ) + 
@@ -670,6 +670,28 @@ plot_new_cases_group_ft <-
   )
 ```
 
+```{r}
+plot_iowa_deaths_ft <-
+  ggplot(
+    data_combined_index %>% filter(aggregation == "total", deaths > 0), 
+    aes(x = date, y = deaths)
+  ) +
+  geom_line() +
+  geom_point(
+    data = . %>% filter(date == max(date))
+  ) +
+  scale_y_log10(
+    sec.axis = dup_axis(name = NULL)
+  ) + 
+  theme_bw() +
+  labs(
+    x = NULL,
+    y = "total number of fatalities",
+    title = "Iowa: COVID-19 fatality trajectory",
+    caption = params$nyt_citation
+  )  
+```
+
 ## Discussion
 
 ```{r cases-county}
@@ -712,3 +734,9 @@ plot_cases_group_ft
 ```{r new-cases-group-ft}
 plot_new_cases_group_ft
 ```
+
+```{r iowa-deaths-ft}
+plot_iowa_deaths_ft
+```
+
+

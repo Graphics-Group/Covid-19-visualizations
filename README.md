@@ -110,6 +110,11 @@ things are happenning all over the state, regardless of the
 county-group. It could be that larger counties have more long-term care
 facilites and that smaller counties have more meat-packing plants.
 
+Since about April 18, I am starting to see a divergence in the rate of
+new cases among the groups. I suspect this is because Black Hawk and
+Woodbury counties, mid-large counties, each have significant outbreaks
+associated with meat-packing plants.
+
 This is my opinion, but rather than explaining using extenuating
 circumstances, I think the call to action is that we need to do more to
 protect our vulnerablities, including meat-packing plants, long-term
