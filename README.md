@@ -27,6 +27,8 @@ trend (last week) of the number of days in which cases double.
 
 ![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
+-----
+
 Here are a few of the charts, focusing on Iowa, that Ian has made, using
 the [NYT data](https://github.com/nytimes/covid-19-data), [current
 data](https://coronavirus.iowa.gov/pages/access) from the state, and

@@ -127,6 +127,8 @@ counties_map %>%
   ggtitle(paste0("Cases in Iowa's counties as of ", max(nyt$date))) 
 ```
 
+---
+
 Here are a few of the charts, focusing on Iowa, that Ian has made, using the [NYT data](https://github.com/nytimes/covid-19-data), [current data](https://coronavirus.iowa.gov/pages/access) from the state, and [county-population data](https://www.icip.iastate.edu/tables/population/counties-estimates).
 
 ```{r echo=FALSE}
