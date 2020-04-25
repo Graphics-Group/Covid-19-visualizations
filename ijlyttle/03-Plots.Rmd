@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   github_document:
     fig_width: 9 
-    fig_height: 4.5 
+    fig_height: 5 
 params:
   threshold_cases: 50 # for individual counties
   threshold_index_cases: 20 # for indexing FT-style charts
@@ -175,13 +175,18 @@ plot_cases <-
     aes(color = county),
     show.legend = FALSE
   ) +
-  scale_y_log10(sec.axis = dup_axis(name = NULL)) + 
+  scale_y_log10(
+    sec.axis = dup_axis(name = NULL)
+  ) + 
   scale_linetype(
     name = "grouping", 
     breaks = c("total", "remainder", "none"),
     labels = c("state total", "all other counties", "county")
   ) +
   scale_color_discrete(breaks = counties_large) +
+  coord_cartesian(
+    ylim = c(10, NA)
+  ) +
   theme_bw() + 
   labs(
     x = NULL,
