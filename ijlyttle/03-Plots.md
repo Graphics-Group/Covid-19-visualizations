@@ -901,6 +901,124 @@ plot_iowa_deaths_ft <-
   )  
 ```
 
+``` r
+counties_closed_may_01 <- 
+  c(
+    "Allamakee", 
+    "Benton", 
+    "Black Hawk", 
+    "Bremer", 
+    "Dallas", 
+    "Des Moines", 
+    "Dubuque", 
+    "Fayette", 
+    "Henry", 
+    "Iowa", 
+    "Jasper", 
+    "Johnson", 
+    "Linn", 
+    "Louisa", 
+    "Marshall", 
+    "Muscatine", 
+    "Polk", 
+    "Poweshiek", 
+    "Scott", 
+    "Tama", 
+    "Washington", 
+    "Woodbury"
+  )
+
+iowa_repoen <- 
+  iowa_counties %>%
+  mutate(
+    open_may_01 = !(county %in% counties_closed_may_01)
+  ) %>%
+  group_by(date, open_may_01) %>%
+  summarize(
+    cases = sum(cases),
+    deaths = sum(deaths),
+    new_cases = sum(new_cases),
+    new_deaths = sum(new_deaths),
+    new_cases_week_avg = sum(new_cases_week_avg),
+    new_deaths_week_avg = sum(new_deaths_week_avg)    
+  ) %>%
+  ungroup()
+```
+
+``` r
+plot_repoen_cases <- 
+  ggplot(iowa_repoen, aes(date, cases)) +
+  geom_line(aes(color = open_may_01)) +
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = open_may_01)
+  ) +
+  geom_text(
+    data = 
+      . %>% 
+      filter(date == max(date)) %>%
+      mutate(label = ifelse(open_may_01, "partial reopening", "remain closed")),
+    aes(label = label, color = open_may_01),
+    hjust = "left",
+    nudge_x = .5,
+    size = 3,
+    show.legend = FALSE
+  ) +
+  scale_x_date(expand = expansion(add = c(0, 7))) +
+  scale_y_log10(
+    sec.axis = dup_axis(name = NULL)
+  ) + 
+  guides(color = FALSE) +
+  coord_cartesian(
+    ylim = c(1, NA)
+  ) +
+  theme_bw() + 
+  labs(
+    x = NULL,
+    y = "number of reported cases",
+    color = 'county "re-opening" May 1',
+    title = "Iowa: COVID-19 cumulative-case trajectories",
+    caption = params$nyt_citation  
+  )
+```
+
+``` r
+plot_repoen_new_cases <- 
+  ggplot(iowa_repoen, aes(date, new_cases_week_avg)) +
+  geom_line(aes(color = open_may_01)) +
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = open_may_01)
+  ) +
+  geom_text(
+    data = 
+      . %>% 
+      filter(date == max(date)) %>%
+      mutate(label = ifelse(open_may_01, "partial reopening", "remain closed")),
+    aes(label = label, color = open_may_01),
+    hjust = "left",
+    nudge_x = .5,
+    size = 3,
+    show.legend = FALSE
+  ) +
+  scale_x_date(expand = expansion(add = c(0, 7))) +
+  scale_y_log10(
+    sec.axis = dup_axis(name = NULL)
+  ) + 
+  guides(color = FALSE) +
+  coord_cartesian(
+    ylim = c(1, NA)
+  ) +
+  theme_bw() + 
+  labs(
+    x = NULL,
+    y = "number of new reported cases",
+    color = 'county "re-opening" May 1',
+    title = "Iowa: COVID-19 daily new cases (7-day rolling average) by reporting date",
+    caption = params$nyt_citation  
+  )
+```
+
 ## Discussion
 
 ``` r
@@ -973,3 +1091,15 @@ plot_iowa_deaths_ft
 ```
 
 ![](03-Plots_files/figure-gfm/iowa-deaths-ft-1.png)<!-- -->
+
+``` r
+plot_repoen_cases
+```
+
+![](03-Plots_files/figure-gfm/iowa-reopen-cases-1.png)<!-- -->
+
+``` r
+plot_repoen_new_cases
+```
+
+![](03-Plots_files/figure-gfm/iowa-reopen-new-cases-1.png)<!-- -->

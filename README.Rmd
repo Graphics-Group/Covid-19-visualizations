@@ -201,3 +201,13 @@ Since about April 18, I am starting to see a divergence in the rate of new cases
 
 This is my opinion, but rather than explaining using extenuating circumstances, I think the call to action is that we need to do more to protect our vulnerablities, including meat-packing plants, long-term care facilities, and hopsitals. We *all* have a role to play in reducing the spread.
 
+On April 27, Gov. Reynolds announced a partial re-opening of 77 counties; here is how these groups compare:
+
+```{r echo=FALSE}
+incl("iowa-reopen-cases-1.png")
+```
+
+```{r echo=FALSE}
+incl("iowa-reopen-new-cases-1.png")
+```
+

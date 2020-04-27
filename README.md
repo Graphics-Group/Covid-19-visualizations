@@ -122,3 +122,11 @@ circumstances, I think the call to action is that we need to do more to
 protect our vulnerablities, including meat-packing plants, long-term
 care facilities, and hopsitals. We *all* have a role to play in reducing
 the spread.
+
+On April 27, Gov. Reynolds announced a partial re-opening of 77
+counties; here is how these groups
+compare:
+
+<img src="ijlyttle/03-Plots_files/figure-gfm/iowa-reopen-cases-1.png" width="864" />
+
+<img src="ijlyttle/03-Plots_files/figure-gfm/iowa-reopen-new-cases-1.png" width="864" />
