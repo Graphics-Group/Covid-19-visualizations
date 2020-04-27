@@ -1,7 +1,7 @@
 COVID-19 Iowa
 ================
 Ian Lyttle
-2020-04-26
+2020-04-27
 
 ``` r
 library("fs")
@@ -417,7 +417,20 @@ plot_cases_ft <-
     nudge_y = 0.05,
     color = "grey80"
   ) +
-  geom_line(aes(color = county, linetype = aggregation), alpha = 0.8) +
+  geom_line(
+    aes(color = county, linetype = aggregation), 
+    alpha = 0.25
+  ) +  
+  geom_line(
+    data = . %>% filter(date >= max(date) - 14),
+    aes(color = county, linetype = aggregation), 
+    alpha = 0.5
+  ) +  
+  geom_line(
+    data = . %>% filter(date >= max(date) - 7),
+    aes(color = county, linetype = aggregation), 
+    alpha = 1
+  ) +
   geom_point(
     data = . %>% filter(date == max(date)),
     aes(color = county),
@@ -476,7 +489,20 @@ plot_new_cases_week_avg_ft <-
     data_combined_index %>% filter(index_new_cases >= 0),
     aes(index_new_cases, new_cases_week_avg)
   ) +
-  geom_line(aes(color = county, linetype = aggregation)) +
+  geom_line(
+    aes(color = county, linetype = aggregation), 
+    alpha = 0.25
+  ) +  
+  geom_line(
+    data = . %>% filter(date >= max(date) - 14),
+    aes(color = county, linetype = aggregation), 
+    alpha = 0.5
+  ) +  
+  geom_line(
+    data = . %>% filter(date >= max(date) - 7),
+    aes(color = county, linetype = aggregation), 
+    alpha = 1
+  ) +
   geom_point(
     data = . %>% filter(date == max(date)),
     aes(color = county),
