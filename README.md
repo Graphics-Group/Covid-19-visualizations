@@ -124,7 +124,7 @@ care facilities, and hopsitals. We *all* have a role to play in reducing
 the spread.
 
 On April 27, Gov. Reynolds announced a partial re-opening of 77
-counties; here is how these groups
+counties, effective May 1; here is how these groups of counties
 compare:
 
 <img src="ijlyttle/03-Plots_files/figure-gfm/iowa-reopen-cases-1.png" width="864" />
