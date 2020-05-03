@@ -301,7 +301,7 @@ plot_cases <-
     breaks = c("total", "remainder", "none"),
     labels = c("state total", "all other counties", "county")
   ) +
-  scale_color_discrete(breaks = counties_large) +
+  scale_color_discrete_qualitative(breaks = counties_large, palette = params$cat_palette) +
   coord_cartesian(
     ylim = c(10, NA)
   ) +
@@ -330,7 +330,7 @@ plot_new_cases_week_avg <-
     breaks = c("total", "remainder", "none"),
     labels = c("state total", "all other counties", "county")
   ) +
-  scale_color_discrete(breaks = counties_large) +
+  scale_color_discrete_qualitative(breaks = counties_large, palette = params$cat_palette) +
   theme_bw() + 
   labs(
     x = NULL,
@@ -471,7 +471,11 @@ plot_cases_ft <-
     breaks = c("total", "remainder", "none"),
     labels = c("state total", "all other counties", "county")
   ) +  
-  scale_color_discrete(breaks = counties_large) +
+  scale_color_discrete_qualitative(
+    breaks = counties_large, 
+    palette = params$cat_palette,
+    na.value = "grey50"
+  ) +
   guides(color = FALSE, linetype = FALSE) +
   theme_bw() +
   labs(
@@ -544,7 +548,11 @@ plot_new_cases_week_avg_ft <-
     breaks = c("total", "remainder", "none"),
     labels = c("state total", "all other counties", "county")
   ) +
-  scale_color_discrete(breaks = counties_large) +
+  scale_color_discrete_qualitative(
+    breaks = counties_large, 
+    palette = params$cat_palette,
+    na.value = "grey50"
+  ) +
   guides(color = FALSE, linetype = FALSE) +
   theme_bw() +
   labs(
@@ -987,6 +995,7 @@ plot_repoen_cases <-
   scale_y_log10(
     sec.axis = dup_axis(name = NULL)
   ) + 
+  scale_color_discrete_qualitative(palette = params$cat_palette) +
   guides(color = FALSE) +
   coord_cartesian(
     ylim = c(1, NA)
@@ -1037,6 +1046,7 @@ plot_repoen_new_cases <-
   scale_y_log10(
     sec.axis = dup_axis(name = NULL)
   ) + 
+  scale_color_discrete_qualitative(palette = params$cat_palette) +
   guides(color = FALSE) +
   coord_cartesian(
     ylim = c(1, NA)
@@ -1057,6 +1067,10 @@ plot_repoen_new_cases <-
 plot_cases
 ```
 
+    ## Warning: Removed 113 row(s) containing missing values (geom_path).
+
+    ## Warning: Removed 2 rows containing missing values (geom_point).
+
 ![](03-Plots_files/figure-gfm/cases-county-1.png)<!-- -->
 
 For another view, here’s an [FT-style
@@ -1073,6 +1087,10 @@ plot_new_cases_week_avg
 ```
 
     ## Warning: Transformation introduced infinite values in continuous y-axis
+
+    ## Warning: Removed 113 row(s) containing missing values (geom_path).
+
+    ## Warning: Removed 2 rows containing missing values (geom_point).
 
 ![](03-Plots_files/figure-gfm/new-cases-county-1.png)<!-- -->
 
