@@ -462,7 +462,7 @@ plot_cases_ft <-
     size = 3,
     show.legend = FALSE
   ) +
-  scale_x_continuous(breaks = f_break, expand = expansion(add = c(0, 4))) +
+  scale_x_continuous(breaks = f_break, expand = expansion(mult = c(0, 0.1))) +
   scale_y_log10(
     sec.axis = dup_axis(name = NULL)
   ) + 
@@ -535,7 +535,7 @@ plot_new_cases_week_avg_ft <-
     size = 3,
     show.legend = FALSE
   ) +
-  scale_x_continuous(breaks = f_break, expand = expansion(add = c(0, 4))) +
+  scale_x_continuous(breaks = f_break, expand = expansion(mult = c(0, 0.1))) +
   scale_y_log10(
     sec.axis = dup_axis(name = NULL)
   ) + 
@@ -943,11 +943,30 @@ iowa_repoen <-
     new_deaths_week_avg = sum(new_deaths_week_avg)    
   ) %>%
   ungroup()
+
+iowa_reopen_annotate <-
+  tibble(
+    date = as.Date(c("2020-04-24", "2020-05-01")),
+    event = c("announced", "opened")
+  )
 ```
 
 ``` r
 plot_repoen_cases <- 
   ggplot(iowa_repoen, aes(date, cases)) +
+  geom_vline(
+    data = iowa_reopen_annotate,
+    aes(xintercept = date),
+    linetype = "dotted"
+  ) +   
+  geom_text(
+    data = iowa_reopen_annotate,
+    aes(x = date, label = event),
+    y = 1,
+    size = 3,
+    hjust = "left",
+    nudge_x = 0.5
+  ) + 
   geom_line(aes(color = open_may_01)) +
   geom_point(
     data = . %>% filter(date == max(date)),
@@ -964,7 +983,7 @@ plot_repoen_cases <-
     size = 3,
     show.legend = FALSE
   ) +
-  scale_x_date(expand = expansion(add = c(0, 7))) +
+  scale_x_date(expand = expansion(mult = c(0, 0.15))) +
   scale_y_log10(
     sec.axis = dup_axis(name = NULL)
   ) + 
@@ -985,6 +1004,19 @@ plot_repoen_cases <-
 ``` r
 plot_repoen_new_cases <- 
   ggplot(iowa_repoen, aes(date, new_cases_week_avg)) +
+  geom_vline(
+    data = iowa_reopen_annotate,
+    aes(xintercept = date),
+    linetype = "dotted"
+  ) +   
+  geom_text(
+    data = iowa_reopen_annotate,
+    aes(x = date, label = event),
+    y = 1,
+    size = 3,
+    hjust = "left",
+    nudge_x = 0.5
+  ) + 
   geom_line(aes(color = open_may_01)) +
   geom_point(
     data = . %>% filter(date == max(date)),
@@ -1001,7 +1033,7 @@ plot_repoen_new_cases <-
     size = 3,
     show.legend = FALSE
   ) +
-  scale_x_date(expand = expansion(add = c(0, 7))) +
+  scale_x_date(expand = expansion(mult = c(0, 0.15))) +
   scale_y_log10(
     sec.axis = dup_axis(name = NULL)
   ) + 
