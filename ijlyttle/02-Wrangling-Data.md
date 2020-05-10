@@ -1,7 +1,7 @@
 Wrangling Data
 ================
 Ian Lyttle
-2020-05-09
+2020-05-10
 
 The purpose of this document is to wrangle the data into useful forms.
 We will write out two data frames: `iowa_counties` and
@@ -187,20 +187,20 @@ iowa_counties <-
   print()
 ```
 
-    ## # A tibble: 3,711 x 9
+    ## # A tibble: 3,804 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-05-09 Polk    2194     58        44          4          121.   
-    ##  2 2020-05-09 Woodb…  1554      7        22          0           68.6  
-    ##  3 2020-05-09 Black…  1477     20        14          0           31.7  
-    ##  4 2020-05-09 Linn     819     58         6          0           16.3  
-    ##  5 2020-05-09 Marsh…   702      3         1          0           22.4  
-    ##  6 2020-05-09 Dallas   660      5         6          0           20.7  
-    ##  7 2020-05-09 Johns…   549      7         3          1            8.86 
-    ##  8 2020-05-09 Musca…   471     19        25          1           15.9  
-    ##  9 2020-05-09 Tama     327     12         5          1            7    
-    ## 10 2020-05-09 Louisa   282      3         1          0            0.714
-    ## # … with 3,701 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-05-10 Polk    2238     60        44          2          109.   
+    ##  2 2020-05-10 Woodb…  1627      8        73          1           73.6  
+    ##  3 2020-05-10 Black…  1493     23        16          3           26.7  
+    ##  4 2020-05-10 Linn     827     58         8          0           13.7  
+    ##  5 2020-05-10 Marsh…   721      3        19          0           16.9  
+    ##  6 2020-05-10 Dallas   676      6        16          1           19.9  
+    ##  7 2020-05-10 Johns…   551      7         2          0            7.57 
+    ##  8 2020-05-10 Musca…   488     22        17          3           16.6  
+    ##  9 2020-05-10 Tama     329     13         2          1            6.14 
+    ## 10 2020-05-10 Louisa   282      3         0          0            0.714
+    ## # … with 3,794 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 ## Write
