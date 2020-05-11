@@ -53,7 +53,7 @@ dump_DOM <- function(client, url, html_file) {
   { Network$setCacheDisabled(cacheDisabled = TRUE) } %...>% 
   { Page$navigate(url = url) } %...>%
   { Page$loadEventFired() } %...>% {
-    Sys.sleep(5) # hacky - wait for a certain event, instead
+    Sys.sleep(10) # hacky - wait for a certain event, instead
   } %...>% { 
     Runtime$evaluate(
       expression = 'document.documentElement.outerHTML'
