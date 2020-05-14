@@ -891,7 +891,7 @@ plot_repoen_new_cases <-
     x = NULL,
     y = "number of new reported cases",
     title = "Iowa: COVID-19 daily new cases (7-day rolling average) by reporting date",
-    subtitle = "77 counties partially-reopened May 1; remainder partially-reopened  May 15",
+    subtitle = "77 counties partially-reopened May 1; remainder partially-reopened May 15",
     caption = params$nyt_citation  
   )
 ```
