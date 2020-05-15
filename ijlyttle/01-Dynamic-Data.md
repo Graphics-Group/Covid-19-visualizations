@@ -1,11 +1,14 @@
 Dynamic Data
 ================
 Ian Lyttle
-2020-04-18
+2020-05-15
 
 The purpose of this document is to download the datasets used from
 dynamic sources, in particular the lastest data from the Iowa
 Coronavirus website.
+
+For now, this has to be run interactively because I can’t get promises
+to play well with knitting RMarkdown files.
 
 ``` r
 library("fs")
@@ -26,6 +29,8 @@ the Iowa Coronavirus site for the latest information.
 url_access <- "https://coronavirus.iowa.gov/pages/access"
 html_file <- path(dir_target, "access.html")
 css_selector <- "td"
+
+snapshot <- file_info(html_file <- path(dir_target, "access.html"))
 ```
 
 We are going to use [rvest](https://rvest.tidyverse.org/) to page, but
@@ -55,7 +60,7 @@ chrome <- Chrome$new()
 
     ## Running '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' \
     ##   --no-first-run --headless \
-    ##   '--user-data-dir=/Users/sesa19001/Library/Application Support/r-crrri/chrome-data-dir-etqmgplp' \
+    ##   '--user-data-dir=/Users/sesa19001/Library/Application Support/r-crrri/chrome-data-dir-ghtgehiz' \
     ##   '--remote-debugging-port=9222' '--proxy-server=http://127.0.0.1:9000' \
     ##   '--proxy-bypass-list=localhost;127.0.0.1;github.schneider-electric.com;repo.continuum.io'
 
@@ -73,7 +78,7 @@ dump_DOM <- function(client, url, html_file) {
   { Network$setCacheDisabled(cacheDisabled = TRUE) } %...>% 
   { Page$navigate(url = url) } %...>%
   { Page$loadEventFired() } %...>% {
-    Sys.sleep(5) # hacky - wait for a certain event, instead
+    Sys.sleep(10) # hacky - wait for a certain event, instead
   } %...>% { 
     Runtime$evaluate(
       expression = 'document.documentElement.outerHTML'
@@ -91,8 +96,7 @@ dump_DOM <- function(client, url, html_file) {
 
 ``` r
 client %...>% 
-  dump_DOM(url_access, html_file) %>%
-  finally(~chrome$close())
+  dump_DOM(url_access, html_file)
 ```
 
 ``` r
