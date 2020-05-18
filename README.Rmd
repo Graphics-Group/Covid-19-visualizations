@@ -114,14 +114,14 @@ state <- "iowa"
 counties_map %>% 
   ggplot(aes(x = long, y = lat)) +
   geom_polygon(aes(group=interaction(region, subregion), fill=doubles), colour="grey50", size=0.15) +
-  scale_fill_brewer("Cases since last week\ndouble in", palette="OrRd", na.value = "white") + #labels=c("one week or more", "4 days to one week", "2 to 4 days", "fewer than 2 days", NA),  ) +
+  scale_fill_brewer("Cases since last week\ndouble in", palette="OrRd", na.value = "white", drop = FALSE) + #labels=c("one week or more", "4 days to one week", "2 to 4 days", "fewer than 2 days", NA),  ) +
   ggthemes::theme_map() +
   theme(legend.position = "right") +
   geom_text(aes(x=px, y= py, label=shorts_cases, 
-                colour = I(ratio_lastweek < 1/4*log10(2) | cum_cases <= 10)),   
+                colour = I(ratio_lastweek < 1/4*log10(2) | cum_cases <= 10)),
             size=2, data = centers %>% filter(region==state)
             ) +
-  scale_colour_manual(values=c("white", "grey10"), 
+  scale_colour_manual(values=c("grey10", "white"), 
                       na.value="grey10", guide=NULL) +
   geom_polygon(aes(group=group), data = map_data("state") %>% filter(region==state), colour="grey30", fill=NA, size=0.25)  +
   ggtitle(paste0("Cases in Iowa's counties as of ", max(nyt$date))) 
