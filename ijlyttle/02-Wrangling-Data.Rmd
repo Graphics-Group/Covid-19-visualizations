@@ -94,8 +94,8 @@ iowa_counties_scrape <-
   tibble(
     date = date_scrape,
     county = iowa_counties_content[ind_counties],
-    cases = as.numeric(iowa_counties_content[ind_counties + 5]),
-    deaths = as.numeric(iowa_counties_content[ind_counties + 9])
+    cases = as.numeric(iowa_counties_content[ind_counties + 2]),
+    deaths = as.numeric(iowa_counties_content[ind_counties + 4])
   ) %>%
   mutate(
     cases = ifelse(is.na(cases), 0, cases),
