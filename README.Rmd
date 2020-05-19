@@ -78,7 +78,7 @@ levels(nyt$doubles) <- c("two weeks or more", "1-2 weeks", "4 days to a week", "
 nytmap <- nyt %>% 
   ungroup(state, county) %>% 
   mutate(region = tolower(state),
-         subregion=tolower(county)) %>%
+         subregion=str_replace(tolower(county), "'", "")) %>%
   mutate(
     subregion = ifelse(subregion=="dekalb", "de kalb", subregion),
     subregion = gsub("\\.", "", subregion)
@@ -102,7 +102,8 @@ centers <- counties %>%
   ) %>%
   mutate(
     shorts_cases = 
-      ifelse(is.na(cum_cases), shorts, sprintf("%s\n%d", shorts, cum_cases))
+      ifelse(is.na(cum_cases), shorts, sprintf("%s\n%d", shorts, cum_cases)),
+    contrast = ratio_lastweek < 1/4*log10(2) | cum_cases <= 10
   )
 
 colors <- RColorBrewer::brewer.pal(n=5, name="OrRd")
@@ -118,7 +119,7 @@ counties_map %>%
   ggthemes::theme_map() +
   theme(legend.position = "right") +
   geom_text(aes(x=px, y= py, label=shorts_cases, 
-                colour = I(ratio_lastweek < 1/4*log10(2) | cum_cases <= 10)),
+                colour = factor(contrast, levels = c("TRUE", "FALSE"))),
             size=2, data = centers %>% filter(region==state)
             ) +
   scale_colour_manual(values=c("grey10", "white"), 
