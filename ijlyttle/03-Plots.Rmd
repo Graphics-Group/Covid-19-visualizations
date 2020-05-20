@@ -206,14 +206,17 @@ plot_cases <-
 
 ```{r}
 plot_new_cases_week_avg <- 
-  ggplot(data_combined, aes(date, new_cases_week_avg)) +
+  ggplot(data_combined, aes(date, new_cases_week_avg + 0.01)) +
   geom_line(aes(color = county, linetype = aggregation)) +
   geom_point(
     data = . %>% filter(date == max(date)),
     aes(color = county),
     show.legend = FALSE
   ) +
-  scale_y_log10(sec.axis = dup_axis(name = NULL)) + 
+  scale_y_log10(
+    labels = function(x) {round(x, 1)},
+    sec.axis = dup_axis(name = NULL)
+  ) + 
   scale_linetype(
     name = "grouping", 
     breaks = c("total", "remainder", "none"),
@@ -384,7 +387,7 @@ plot_cases_ft <-
 plot_new_cases_week_avg_ft <- 
   ggplot(
     data_combined_index %>% filter(index_new_cases >= 0),
-    aes(index_new_cases, new_cases_week_avg)
+    aes(index_new_cases, new_cases_week_avg + 0.01)
   ) +
   geom_line(
     aes(color = county, linetype = aggregation), 
@@ -434,6 +437,7 @@ plot_new_cases_week_avg_ft <-
   ) +
   scale_x_continuous(breaks = f_break, expand = expansion(mult = c(0, 0.1))) +
   scale_y_log10(
+    labels = function(x) {round(x, 1)},
     sec.axis = dup_axis(name = NULL)
   ) + 
   scale_linetype(

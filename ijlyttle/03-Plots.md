@@ -1,7 +1,7 @@
 COVID-19 Iowa
 ================
 Ian Lyttle
-2020-05-19
+2020-05-20
 
 ``` r
 library("fs")
@@ -9,14 +9,14 @@ library("glue")
 library("tidyverse")
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+    ## ── Attaching packages ───────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 
     ## ✓ ggplot2 3.3.0          ✓ purrr   0.3.3     
     ## ✓ tibble  2.1.3          ✓ dplyr   0.8.4     
     ## ✓ tidyr   1.0.0          ✓ stringr 1.4.0     
     ## ✓ readr   1.3.1.9000     ✓ forcats 0.4.0
 
-    ## ── Conflicts ────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ──────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## x dplyr::collapse() masks glue::collapse()
     ## x dplyr::filter()   masks stats::filter()
     ## x dplyr::lag()      masks stats::lag()
@@ -62,20 +62,20 @@ iowa_counties <-
     ##   aggregation = col_character()
     ## )
 
-    ## # A tibble: 4,659 x 9
+    ## # A tibble: 4,757 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-05-19 Polk    3128     83       127          2            97.3 
-    ##  2 2020-05-19 Woodb…  2342     17        64          0            50.6 
-    ##  3 2020-05-19 Black…  1628     31        25          1            15.3 
-    ##  4 2020-05-19 Linn     899     73         0          3             7.14
-    ##  5 2020-05-19 Marsh…   817      7        13          2            11.3 
-    ##  6 2020-05-19 Dallas   795     11         7          0            11.9 
-    ##  7 2020-05-19 Johns…   574      7         0          0             2.14
-    ##  8 2020-05-19 Musca…   531     33        -1          0             4.14
-    ##  9 2020-05-19 Wapel…   405      2         9          0            17.4 
-    ## 10 2020-05-19 Crawf…   394      1        10          0            28.1 
-    ## # … with 4,649 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-05-20 Polk    3221     85        93          2            95.7 
+    ##  2 2020-05-20 Woodb…  2353     18        11          1            42.7 
+    ##  3 2020-05-20 Black…  1634     34         6          3            15.1 
+    ##  4 2020-05-20 Linn     900     72         1         -1             6   
+    ##  5 2020-05-20 Marsh…   823      7         6          0            10.7 
+    ##  6 2020-05-20 Dallas   800     11         5          0             8.43
+    ##  7 2020-05-20 Johns…   578      7         4          0             2.86
+    ##  8 2020-05-20 Musca…   535     34         4          1             3.14
+    ##  9 2020-05-20 Wapel…   416      2        11          0            15.7 
+    ## 10 2020-05-20 Crawf…   409      1        15          0            28.9 
+    ## # … with 4,747 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 Let’s have a quick look at all the counties.
@@ -106,16 +106,16 @@ iowa_counties_current <-
     ## # A tibble: 99 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-05-19 Polk    3128     83       127          2            97.3 
-    ##  2 2020-05-19 Woodb…  2342     17        64          0            50.6 
-    ##  3 2020-05-19 Black…  1628     31        25          1            15.3 
-    ##  4 2020-05-19 Linn     899     73         0          3             7.14
-    ##  5 2020-05-19 Marsh…   817      7        13          2            11.3 
-    ##  6 2020-05-19 Dallas   795     11         7          0            11.9 
-    ##  7 2020-05-19 Johns…   574      7         0          0             2.14
-    ##  8 2020-05-19 Musca…   531     33        -1          0             4.14
-    ##  9 2020-05-19 Wapel…   405      2         9          0            17.4 
-    ## 10 2020-05-19 Crawf…   394      1        10          0            28.1 
+    ##  1 2020-05-20 Polk    3221     85        93          2            95.7 
+    ##  2 2020-05-20 Woodb…  2353     18        11          1            42.7 
+    ##  3 2020-05-20 Black…  1634     34         6          3            15.1 
+    ##  4 2020-05-20 Linn     900     72         1         -1             6   
+    ##  5 2020-05-20 Marsh…   823      7         6          0            10.7 
+    ##  6 2020-05-20 Dallas   800     11         5          0             8.43
+    ##  7 2020-05-20 Johns…   578      7         4          0             2.86
+    ##  8 2020-05-20 Musca…   535     34         4          1             3.14
+    ##  9 2020-05-20 Wapel…   416      2        11          0            15.7 
+    ## 10 2020-05-20 Crawf…   409      1        15          0            28.9 
     ## # … with 89 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
@@ -191,20 +191,20 @@ iowa_total <-
   print()
 ```
 
-    ## # A tibble: 73 x 9
+    ## # A tibble: 74 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <fct>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-05-19 <NA>   15291    367       345         12             341.
-    ##  2 2020-05-18 <NA>   14946    355       303          4             368.
-    ##  3 2020-05-17 <NA>   14643    351       330          5             383.
-    ##  4 2020-05-16 <NA>   14313    346       274         10             378.
-    ##  5 2020-05-15 <NA>   14039    336       372         18             371.
-    ##  6 2020-05-14 <NA>   13667    318       383         12             374.
-    ##  7 2020-05-13 <NA>   13284    306       378         17             413.
-    ##  8 2020-05-12 <NA>   12906    289       538         18             399.
-    ##  9 2020-05-11 <NA>   12368    271       409          6             394.
-    ## 10 2020-05-10 <NA>   11959    265       291         13             416.
-    ## # … with 63 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-05-20 <NA>   15531    381       240         14             321 
+    ##  2 2020-05-19 <NA>   15291    367       345         12             341.
+    ##  3 2020-05-18 <NA>   14946    355       303          4             368.
+    ##  4 2020-05-17 <NA>   14643    351       330          5             383.
+    ##  5 2020-05-16 <NA>   14313    346       274         10             378.
+    ##  6 2020-05-15 <NA>   14039    336       372         18             371.
+    ##  7 2020-05-14 <NA>   13667    318       383         12             374.
+    ##  8 2020-05-13 <NA>   13284    306       378         17             413.
+    ##  9 2020-05-12 <NA>   12906    289       538         18             399.
+    ## 10 2020-05-11 <NA>   12368    271       409          6             394.
+    ## # … with 64 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 ``` r
@@ -226,20 +226,20 @@ iowa_remainder <-
   print()
 ```
 
-    ## # A tibble: 69 x 9
+    ## # A tibble: 70 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <fct>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-05-19 <NA>    1061     19        37          1             27.7
-    ##  2 2020-05-18 <NA>    1024     18        37          0             26.6
-    ##  3 2020-05-17 <NA>     987     18        31          0             26.4
-    ##  4 2020-05-16 <NA>     956     18        23          0             23.7
-    ##  5 2020-05-15 <NA>     933     18        10          1             23.4
-    ##  6 2020-05-14 <NA>     923     17        22          1             26  
-    ##  7 2020-05-13 <NA>     901     16        34          0             30.4
-    ##  8 2020-05-12 <NA>     867     16        29          3             29.1
-    ##  9 2020-05-11 <NA>     838     13        36          0             30  
-    ## 10 2020-05-10 <NA>     802     13        12          1             29.3
-    ## # … with 59 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-05-20 <NA>    1108     21        47          2             29.6
+    ##  2 2020-05-19 <NA>    1061     19        37          1             27.7
+    ##  3 2020-05-18 <NA>    1024     18        37          0             26.6
+    ##  4 2020-05-17 <NA>     987     18        31          0             26.4
+    ##  5 2020-05-16 <NA>     956     18        23          0             23.7
+    ##  6 2020-05-15 <NA>     933     18        10          1             23.4
+    ##  7 2020-05-14 <NA>     923     17        22          1             26  
+    ##  8 2020-05-13 <NA>     901     16        34          0             30.4
+    ##  9 2020-05-12 <NA>     867     16        29          3             29.1
+    ## 10 2020-05-11 <NA>     838     13        36          0             30  
+    ## # … with 60 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 ``` r
@@ -324,14 +324,17 @@ plot_cases <-
 
 ``` r
 plot_new_cases_week_avg <- 
-  ggplot(data_combined, aes(date, new_cases_week_avg)) +
+  ggplot(data_combined, aes(date, new_cases_week_avg + 0.01)) +
   geom_line(aes(color = county, linetype = aggregation)) +
   geom_point(
     data = . %>% filter(date == max(date)),
     aes(color = county),
     show.legend = FALSE
   ) +
-  scale_y_log10(sec.axis = dup_axis(name = NULL)) + 
+  scale_y_log10(
+    labels = function(x) {round(x, 1)},
+    sec.axis = dup_axis(name = NULL)
+  ) + 
   scale_linetype(
     name = "grouping", 
     breaks = c("total", "remainder", "none"),
@@ -502,7 +505,7 @@ plot_cases_ft <-
 plot_new_cases_week_avg_ft <- 
   ggplot(
     data_combined_index %>% filter(index_new_cases >= 0),
-    aes(index_new_cases, new_cases_week_avg)
+    aes(index_new_cases, new_cases_week_avg + 0.01)
   ) +
   geom_line(
     aes(color = county, linetype = aggregation), 
@@ -552,6 +555,7 @@ plot_new_cases_week_avg_ft <-
   ) +
   scale_x_continuous(breaks = f_break, expand = expansion(mult = c(0, 0.1))) +
   scale_y_log10(
+    labels = function(x) {round(x, 1)},
     sec.axis = dup_axis(name = NULL)
   ) + 
   scale_linetype(
@@ -688,10 +692,10 @@ iowa_counts <-
     ## # A tibble: 4 x 5
     ##   population_group counties population cases deaths
     ##   <chr>               <int>      <dbl> <dbl>  <dbl>
-    ## 1 large                   2     716867  4027    156
-    ## 2 mid-large               7     846299  6015     85
-    ## 3 mid-small              24     812518  3165     77
-    ## 4 small                  66     779386  2084     49
+    ## 1 large                   2     716867  4121    157
+    ## 2 mid-large               7     846299  6050     90
+    ## 3 mid-small              24     812518  3221     80
+    ## 4 small                  66     779386  2139     54
 
 ``` r
 vars_count <- c("counties", "population", "cases", "deaths")
@@ -714,20 +718,20 @@ iowa_counts_tall <-
     ##    <chr>            <fct>       <dbl>
     ##  1 large            counties        2
     ##  2 large            population 716867
-    ##  3 large            cases        4027
-    ##  4 large            deaths        156
+    ##  3 large            cases        4121
+    ##  4 large            deaths        157
     ##  5 mid-large        counties        7
     ##  6 mid-large        population 846299
-    ##  7 mid-large        cases        6015
-    ##  8 mid-large        deaths         85
+    ##  7 mid-large        cases        6050
+    ##  8 mid-large        deaths         90
     ##  9 mid-small        counties       24
     ## 10 mid-small        population 812518
-    ## 11 mid-small        cases        3165
-    ## 12 mid-small        deaths         77
+    ## 11 mid-small        cases        3221
+    ## 12 mid-small        deaths         80
     ## 13 small            counties       66
     ## 14 small            population 779386
-    ## 15 small            cases        2084
-    ## 16 small            deaths         49
+    ## 15 small            cases        2139
+    ## 16 small            deaths         54
 
 ``` r
 plot_iowa_proportions <-
@@ -1094,8 +1098,6 @@ plot_cases_ft
 ``` r
 plot_new_cases_week_avg
 ```
-
-    ## Warning: Transformation introduced infinite values in continuous y-axis
 
 ![](03-Plots_files/figure-gfm/new-cases-county-1.png)<!-- -->
 
