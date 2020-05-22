@@ -1,7 +1,7 @@
 Wrangling Data
 ================
 Ian Lyttle
-2020-05-20
+2020-05-22
 
 The purpose of this document is to wrangle the data into useful forms.
 We will write out two data frames: `iowa_counties` and
@@ -178,6 +178,11 @@ iowa_counties <-
   iowa_counties_combined %>%
   filter(county %in% iowa_county_population$county) %>%
   group_by(county) %>%
+  arrange(desc(date)) %>% # take care of decreasing-counts
+  mutate(
+    cases = cummin(cases),   
+    deaths = cummin(deaths) 
+  ) %>%
   arrange(date) %>%
   mutate(
     new_cases = cases - lag(cases, default = 0),
@@ -191,20 +196,20 @@ iowa_counties <-
   print()
 ```
 
-    ## # A tibble: 4,757 x 9
+    ## # A tibble: 4,953 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-05-20 Polk    3221     85        93          2            95.7 
-    ##  2 2020-05-20 Woodb…  2353     18        11          1            42.7 
-    ##  3 2020-05-20 Black…  1634     34         6          3            15.1 
-    ##  4 2020-05-20 Linn     900     72         1         -1             6   
-    ##  5 2020-05-20 Marsh…   823      7         6          0            10.7 
-    ##  6 2020-05-20 Dallas   800     11         5          0             8.43
-    ##  7 2020-05-20 Johns…   578      7         4          0             2.86
-    ##  8 2020-05-20 Musca…   535     34         4          1             3.14
-    ##  9 2020-05-20 Wapel…   416      2        11          0            15.7 
-    ## 10 2020-05-20 Crawf…   409      1        15          0            28.9 
-    ## # … with 4,747 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-05-22 Polk    3489     92       108          1           103.  
+    ##  2 2020-05-22 Woodb…  2462     23        14          0            50.1 
+    ##  3 2020-05-22 Black…  1661     37         6          0            16.1 
+    ##  4 2020-05-22 Linn     915     74         5          0             4.71
+    ##  5 2020-05-22 Marsh…   850      9         9          1            11.3 
+    ##  6 2020-05-22 Dallas   824     13         8          0             9.57
+    ##  7 2020-05-22 Johns…   590      7         5          0             3.57
+    ##  8 2020-05-22 Musca…   540     35         0          0             3   
+    ##  9 2020-05-22 Wapel…   459      3         9          0            15.6 
+    ## 10 2020-05-22 Crawf…   440      2         5          0            14.9 
+    ## # … with 4,943 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 ## Write

@@ -116,6 +116,11 @@ iowa_counties <-
   iowa_counties_combined %>%
   filter(county %in% iowa_county_population$county) %>%
   group_by(county) %>%
+  arrange(desc(date)) %>% # take care of decreasing-counts
+  mutate(
+    cases = cummin(cases),   
+    deaths = cummin(deaths) 
+  ) %>%
   arrange(date) %>%
   mutate(
     new_cases = cases - lag(cases, default = 0),
