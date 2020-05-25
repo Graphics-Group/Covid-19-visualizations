@@ -74,8 +74,9 @@ client %...>%
   dump_DOM(url_access, html_file)
 ```
 
-
 ```{r}
 client
 ```
+
+
 
