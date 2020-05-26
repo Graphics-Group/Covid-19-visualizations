@@ -7,8 +7,6 @@ output: github_document
 
 The purpose of this document is to download the datasets used from dynamic sources, in particular the lastest data from the Iowa Coronavirus website.
 
-For now, this has to be run interactively because I can't get promises to play well with knitting RMarkdown files.
-
 ```{r}
 library("fs")
 library("crrri")
@@ -28,8 +26,6 @@ The data from the NYT is delayed by a day. It may be useful to scrape the Iowa C
 url_access <- "https://coronavirus.iowa.gov/pages/access"
 html_file <- path(dir_target, "access.html")
 css_selector <- "td"
-
-snapshot <- file_info(html_file <- path(dir_target, "access.html"))
 ```
 
 We are going to use [rvest](https://rvest.tidyverse.org/) to page, but there's a problem. The page is not a static HTML site; the data we want is injected into the site using JavaScript. This means that **rvest** would be looking for the css tags in a document that does not have the data table.
@@ -70,12 +66,14 @@ dump_DOM <- function(client, url, html_file) {
 ```
 
 ```{r}
-client %...>% 
-  dump_DOM(url_access, html_file)
+hold(
+  client %...>% dump_DOM(url_access, html_file)  
+)
+
 ```
 
 ```{r}
-client
+chrome$close()
 ```
 
 
