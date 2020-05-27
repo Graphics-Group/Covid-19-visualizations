@@ -614,7 +614,7 @@ iowa_county_population <-
     ##  7 19061 Dubuque       97311           1879785            0.596 mid-large       
     ##  8 19169 Story         97117           1782474            0.565 mid-large       
     ##  9 19049 Dallas        93453           1685357            0.534 mid-large       
-    ## 10 19155 Pottawa…      93206           1591904            0.505 mid-small       
+    ## 10 19155 Pottawa…      93206           1591904            0.505 mid-large       
     ## # … with 89 more rows
 
 You can see that the “first” group contains two counties: Polk and Linn;
@@ -694,8 +694,8 @@ iowa_counts <-
     ##   population_group counties population cases deaths
     ##   <chr>               <int>      <dbl> <dbl>  <dbl>
     ## 1 large                   2     716867  4784    189
-    ## 2 mid-large               7     846299  6580    123
-    ## 3 mid-small              24     812518  3688    109
+    ## 2 mid-large               8     939505  6801    130
+    ## 3 mid-small              23     719312  3467    102
     ## 4 small                  66     779386  3187     64
 
 ``` r
@@ -721,14 +721,14 @@ iowa_counts_tall <-
     ##  2 large            population 716867
     ##  3 large            cases        4784
     ##  4 large            deaths        189
-    ##  5 mid-large        counties        7
-    ##  6 mid-large        population 846299
-    ##  7 mid-large        cases        6580
-    ##  8 mid-large        deaths        123
-    ##  9 mid-small        counties       24
-    ## 10 mid-small        population 812518
-    ## 11 mid-small        cases        3688
-    ## 12 mid-small        deaths        109
+    ##  5 mid-large        counties        8
+    ##  6 mid-large        population 939505
+    ##  7 mid-large        cases        6801
+    ##  8 mid-large        deaths        130
+    ##  9 mid-small        counties       23
+    ## 10 mid-small        population 719312
+    ## 11 mid-small        cases        3467
+    ## 12 mid-small        deaths        102
     ## 13 small            counties       66
     ## 14 small            population 779386
     ## 15 small            cases        3187

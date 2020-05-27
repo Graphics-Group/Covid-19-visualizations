@@ -45,7 +45,7 @@ iowa_county_population <-
     quartile_population = cumulative_poulation/max(cumulative_poulation),
     population_group = cut(
       quartile_population, 
-      breaks = c(0, 0.25, 0.51, 0.78, 1),
+      breaks = c(0, 0.25, 0.50, 0.78, 1),
       labels = c("small", "mid-small", "mid-large", "large")
       # labels = c("FT-AA", "PW-HN", "ST-DA", "PK-LN")
     ),

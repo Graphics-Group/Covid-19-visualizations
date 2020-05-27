@@ -80,7 +80,7 @@ iowa_county_population <-
     quartile_population = cumulative_poulation/max(cumulative_poulation),
     population_group = cut(
       quartile_population, 
-      breaks = c(0, 0.25, 0.51, 0.78, 1),
+      breaks = c(0, 0.25, 0.50, 0.78, 1),
       labels = c("small", "mid-small", "mid-large", "large")
       # labels = c("FT-AA", "PW-HN", "ST-DA", "PK-LN")
     ),
@@ -102,7 +102,7 @@ iowa_county_population <-
     ##  7 19061 Dubuque       97311           1879785            0.596 mid-large       
     ##  8 19169 Story         97117           1782474            0.565 mid-large       
     ##  9 19049 Dallas        93453           1685357            0.534 mid-large       
-    ## 10 19155 Pottawa…      93206           1591904            0.505 mid-small       
+    ## 10 19155 Pottawa…      93206           1591904            0.505 mid-large       
     ## # … with 89 more rows
 
 ## Cases data
