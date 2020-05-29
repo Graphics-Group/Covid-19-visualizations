@@ -1,7 +1,7 @@
 Wrangling Data
 ================
 Ian Lyttle
-2020-05-28
+2020-05-29
 
 The purpose of this document is to wrangle the data into useful forms.
 We will write out two data frames: `iowa_counties` and
@@ -12,14 +12,14 @@ library("fs")
 library("tidyverse")
 ```
 
-    ## ── Attaching packages ───────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+    ## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 
     ## ✓ ggplot2 3.3.0          ✓ purrr   0.3.3     
     ## ✓ tibble  2.1.3          ✓ dplyr   0.8.4     
     ## ✓ tidyr   1.0.0          ✓ stringr 1.4.0     
     ## ✓ readr   1.3.1.9000     ✓ forcats 0.4.0
 
-    ## ── Conflicts ──────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -196,20 +196,20 @@ iowa_counties <-
   print()
 ```
 
-    ## # A tibble: 5,542 x 9
+    ## # A tibble: 5,641 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-05-28 Polk    3920    118        30          3            77   
-    ##  2 2020-05-28 Woodb…  2668     31         0          0            31.4 
-    ##  3 2020-05-28 Black…  1716     43         3          0             8.71
-    ##  4 2020-05-28 Linn     941     76         1          0             4.43
-    ##  5 2020-05-28 Marsh…   882     15         1          0             5.86
-    ##  6 2020-05-28 Dallas   876     17         2          0             8.57
-    ##  7 2020-05-28 Buena…   701      0        13          0            81   
-    ##  8 2020-05-28 Johns…   607      8         0          0             3.14
-    ##  9 2020-05-28 Musca…   549     41         0          0             1.29
-    ## 10 2020-05-28 Wapel…   542      4         2          0            13.1 
-    ## # … with 5,532 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-05-29 Polk    4024    123        65          4            71.3 
+    ##  2 2020-05-29 Woodb…  2687     33         9          0            31.3 
+    ##  3 2020-05-29 Black…  1727     44         3          1             9.14
+    ##  4 2020-05-29 Linn     943     76         1          0             3.71
+    ##  5 2020-05-29 Marsh…   885     16         1          0             4.43
+    ##  6 2020-05-29 Dallas   883     20         4          3             8.86
+    ##  7 2020-05-29 Buena…   709      0         2          0            81.3 
+    ##  8 2020-05-29 Johns…   608      8         1          0             2.43
+    ##  9 2020-05-29 Musca…   553     41         4          0             1.86
+    ## 10 2020-05-29 Wapel…   548      8         0          1            12.3 
+    ## # … with 5,631 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 ## Write
