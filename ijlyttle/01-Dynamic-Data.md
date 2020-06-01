@@ -1,7 +1,7 @@
 Dynamic Data
 ================
 Ian Lyttle
-2020-05-31
+2020-06-01
 
 The purpose of this document is to download the datasets used from
 dynamic sources, in particular the lastest data from the Iowa
@@ -55,7 +55,7 @@ chrome <- Chrome$new()
 
     ## Running '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' \
     ##   --no-first-run --headless \
-    ##   '--user-data-dir=/Users/sesa19001/Library/Application Support/r-crrri/chrome-data-dir-bgcxqpuf' \
+    ##   '--user-data-dir=/Users/sesa19001/Library/Application Support/r-crrri/chrome-data-dir-wpcvebck' \
     ##   '--remote-debugging-port=9222' '--proxy-server=http://127.0.0.1:9000' \
     ##   '--proxy-bypass-list=localhost;127.0.0.1;github.schneider-electric.com;repo.continuum.io'
 
