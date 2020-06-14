@@ -773,7 +773,7 @@ counties_closed_may_01 <-
     "Woodbury"
   )
 
-iowa_repoen <- 
+iowa_reopen <- 
   iowa_counties %>%
   mutate(
     open_may_01 = !(county %in% counties_closed_may_01)
@@ -797,8 +797,8 @@ iowa_reopen_annotate <-
 ```
 
 ```{r}
-plot_repoen_cases <- 
-  ggplot(iowa_repoen, aes(date, cases)) +
+plot_reopen_cases <- 
+  ggplot(iowa_reopen, aes(date, cases)) +
   geom_vline(
     data = iowa_reopen_annotate,
     aes(xintercept = date),
@@ -849,8 +849,8 @@ plot_repoen_cases <-
 ```
 
 ```{r}
-plot_repoen_new_cases <- 
-  ggplot(iowa_repoen, aes(date, new_cases_week_avg)) +
+plot_reopen_new_cases <- 
+  ggplot(iowa_reopen, aes(date, new_cases_week_avg)) +
   geom_vline(
     data = iowa_reopen_annotate,
     aes(xintercept = date),
@@ -900,6 +900,74 @@ plot_repoen_new_cases <-
   )
 ```
 
+```{r}
+plot_reopen_new_cases_linear <- 
+  plot_reopen_new_cases + 
+  scale_y_continuous(
+    sec.axis = dup_axis(name = NULL)
+  ) 
+```
+
+Let's imagine an area-chart:
+
+```{r}
+iowa_reopen_pyramid <- 
+  iowa_reopen %>%
+  mutate(
+    across(
+      .cols = matches("cases|deaths"),
+      ~ ifelse(open_may_01, -.x, .x)
+    )    
+  ) 
+```
+
+```{r}
+scale_color <- c(`TRUE` = "#F28E2B", `FALSE` = "#4E79E7")
+
+ggplot(
+  iowa_reopen,
+  aes(x = date, y = new_cases_week_avg, group = open_may_01)
+) +
+  geom_line(aes(color = open_may_01)) +
+  geom_point(
+    data = . %>% filter(date == max(date)),
+    aes(color = open_may_01)
+  ) +
+  geom_area(
+    aes(fill = open_may_01),
+    alpha = 0.3,
+    position = "identity",
+  ) +
+  geom_text(
+    data = 
+      . %>% 
+      filter(date == max(date)) %>%
+      mutate(
+        label = ifelse(open_may_01, "initial reopening", "later reopening") 
+      ),
+    aes(label = label, color = open_may_01),
+    hjust = "left",
+    nudge_x = 1.5,
+    size = 3.5,
+    show.legend = FALSE
+  ) +
+  scale_x_date(expand = expansion(mult = c(0, 0.18))) +
+  scale_y_continuous(
+    sec.axis = dup_axis(name = NULL),
+    labels = abs
+  ) +
+  scale_color_manual(values = scale_color) +
+  scale_fill_manual(values = scale_color) +
+  guides(color = FALSE, fill = FALSE) +
+  theme_bw() +
+  labs(
+    x = NULL,
+    y = "number of new reported cases",
+    title = "Iowa: COVID-19 daily new cases (7-day rolling average) by reporting date",
+    subtitle = "77 counties partially-reopened May 1; remainder partially-reopened May 15",
+    caption = params$nyt_citation  
+  )
+```
 
 ## Discussion
 
@@ -949,10 +1017,14 @@ plot_iowa_deaths_ft
 ```
 
 ```{r iowa-reopen-cases}
-plot_repoen_cases
+plot_reopen_cases
 ```
 
 ```{r iowa-reopen-new-cases}
-plot_repoen_new_cases
+plot_reopen_new_cases
+```
+
+```{r iowa-reopen-new-cases-linear}
+plot_reopen_new_cases_linear
 ```
 
