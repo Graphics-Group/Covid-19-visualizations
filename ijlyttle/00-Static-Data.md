@@ -1,7 +1,7 @@
 Static Data
 ================
 Ian Lyttle
-2020-06-19
+2020-06-20
 
 The purpose of this document is to download the datasets used from
 static sources.
