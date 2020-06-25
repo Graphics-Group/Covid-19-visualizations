@@ -1,7 +1,7 @@
 Wrangling Data
 ================
 Ian Lyttle
-2020-06-24
+2020-06-25
 
 The purpose of this document is to wrangle the data into useful forms.
 We will write out two data frames: `iowa_counties` and
@@ -12,14 +12,14 @@ library("fs")
 library("tidyverse")
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+    ## ── Attaching packages ────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 
     ## ✓ ggplot2 3.3.0          ✓ purrr   0.3.3     
     ## ✓ tibble  2.1.3          ✓ dplyr   1.0.0     
     ## ✓ tidyr   1.0.0          ✓ stringr 1.4.0     
     ## ✓ readr   1.3.1.9000     ✓ forcats 0.4.0
 
-    ## ── Conflicts ────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ───────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -196,20 +196,20 @@ iowa_counties <-
   print()
 ```
 
-    ## # A tibble: 8,215 x 9
+    ## # A tibble: 8,314 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-06-24 Polk    5593    169        11          0            45.3 
-    ##  2 2020-06-24 Woodb…  3087     43         4          0             8.29
-    ##  3 2020-06-24 Black…  1919     56         5          0            10.4 
-    ##  4 2020-06-24 Buena…  1673     10         3          0             7.57
-    ##  5 2020-06-24 Linn    1112     80         5          0            10   
-    ##  6 2020-06-24 Dallas  1084     29         0          0             5.43
-    ##  7 2020-06-24 Marsh…   988     18        10          0             5.57
-    ##  8 2020-06-24 Johns…   833      8        22          0            22.7 
-    ##  9 2020-06-24 Wapel…   691     28         2          0             1.71
-    ## 10 2020-06-24 Crawf…   643      2         1          0             1.86
-    ## # … with 8,205 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-06-25 Polk    5680    171        35          0            51   
+    ##  2 2020-06-25 Woodb…  3095     43         5          0             7.71
+    ##  3 2020-06-25 Black…  1937     56         5          0            10.1 
+    ##  4 2020-06-25 Buena…  1675     10         0          0             6.86
+    ##  5 2020-06-25 Linn    1136     80        10          0            12.1 
+    ##  6 2020-06-25 Dallas  1097     29         6          0             6.57
+    ##  7 2020-06-25 Marsh…   990     18         1          0             5.29
+    ##  8 2020-06-25 Johns…   884      9        26          0            26.9 
+    ##  9 2020-06-25 Wapel…   693     28         1          0             1.71
+    ## 10 2020-06-25 Potta…   648     11         5          0            13.6 
+    ## # … with 8,304 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 ## Write
