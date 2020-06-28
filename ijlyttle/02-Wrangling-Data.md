@@ -1,7 +1,7 @@
 Wrangling Data
 ================
 Ian Lyttle
-2020-06-27
+2020-06-28
 
 The purpose of this document is to wrangle the data into useful forms.
 We will write out two data frames: `iowa_counties` and
@@ -199,16 +199,16 @@ iowa_counties <-
     ## # A tibble: 8,512 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-06-27 Polk    5822    174        22          0            55.1 
-    ##  2 2020-06-27 Woodb…  3125     44         3          0            10   
-    ##  3 2020-06-27 Black…  2005     57         3          0            17.4 
-    ##  4 2020-06-27 Buena…  1687     11         0          0             5.43
-    ##  5 2020-06-27 Linn    1166     82         5          0            12.7 
-    ##  6 2020-06-27 Dallas  1134     29         8          0             9.57
-    ##  7 2020-06-27 Marsh…  1006     18         1          0             5.43
-    ##  8 2020-06-27 Johns…   972      8         8          0            35.3 
-    ##  9 2020-06-27 Wapel…   694     29         0          0             1.71
-    ## 10 2020-06-27 Potta…   664     11         1          0            11   
+    ##  1 2020-06-28 Polk    5930    174       130          0            70.6 
+    ##  2 2020-06-28 Woodb…  3136     44        14          0            11.6 
+    ##  3 2020-06-28 Black…  2052     57        50          0            24.1 
+    ##  4 2020-06-28 Buena…  1691     11         4          0             6   
+    ##  5 2020-06-28 Linn    1177     82        16          0            14.3 
+    ##  6 2020-06-28 Dallas  1170     29        44          0            14.7 
+    ##  7 2020-06-28 Johns…  1028      8        64          0            43.3 
+    ##  8 2020-06-28 Marsh…  1009     18         4          0             5.86
+    ##  9 2020-06-28 Wapel…   696     29         2          0             2   
+    ## 10 2020-06-28 Potta…   673     11        10          0            12.3 
     ## # … with 8,502 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
