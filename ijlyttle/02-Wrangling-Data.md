@@ -1,7 +1,7 @@
 Wrangling Data
 ================
 Ian Lyttle
-2020-07-26
+2020-07-27
 
 The purpose of this document is to wrangle the data into useful forms.
 We will write out two data frames: `iowa_counties` and
@@ -196,20 +196,20 @@ iowa_counties <-
   print()
 ```
 
-    ## # A tibble: 11,383 x 9
+    ## # A tibble: 11,482 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-07-26 Polk    9023    191        38          0             95.6
-    ##  2 2020-07-26 Woodb…  3539     47         0          0             11.1
-    ##  3 2020-07-26 Black…  2841     61         3          0             21.3
-    ##  4 2020-07-26 Linn    1810     87        10          0             33.4
-    ##  5 2020-07-26 Buena…  1775     12         1          0              3  
-    ##  6 2020-07-26 Johns…  1739     10         4          0             15.9
-    ##  7 2020-07-26 Dallas  1660     34        10          0             16.6
-    ##  8 2020-07-26 Scott   1463     11         5          0             24.7
-    ##  9 2020-07-26 Dubuq…  1342     26         2          0             21.9
-    ## 10 2020-07-26 Marsh…  1290     22         5          0             15.1
-    ## # … with 11,373 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-07-27 Polk    9098    191        18          0            90.4 
+    ##  2 2020-07-27 Woodb…  3561     47         7          0            11.3 
+    ##  3 2020-07-27 Black…  2854     62         4          0            21   
+    ##  4 2020-07-27 Linn    1837     87        11          0            33.3 
+    ##  5 2020-07-27 Buena…  1776     12         1          0             2.71
+    ##  6 2020-07-27 Johns…  1756     10         5          0            17.1 
+    ##  7 2020-07-27 Dallas  1672     34         2          0            14.4 
+    ##  8 2020-07-27 Scott   1486     11         3          0            24   
+    ##  9 2020-07-27 Dubuq…  1363     26         8          0            21.1 
+    ## 10 2020-07-27 Marsh…  1302     23         4          0            15   
+    ## # … with 11,472 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 ## Write
