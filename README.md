@@ -37,8 +37,7 @@ data](https://www.icip.iastate.edu/tables/population/counties-estimates).
 
 First is shows counties with large numbers of cases, also showing
 aggregations for the state as a whole, as well as for counties not
-otherwise
-shown:
+otherwise shown:
 
 <img src="ijlyttle/03-Plots_files/figure-gfm/cases-county-1.png" width="864" />
 
@@ -56,8 +55,7 @@ associated with targeted testing at meat-packing plants (Louisa, Tama,
 and Black Hawk).
 
 Again, following the style of FT, we can look at the seven-day rolling
-average of new
-cases:
+average of new cases:
 
 <img src="ijlyttle/03-Plots_files/figure-gfm/new-cases-county-ft-1.png" width="864" />
 
@@ -82,8 +80,7 @@ fastest-growing county in the state, i.e. suburban Des Moines:
 Another question I want to ask deals with differences between large
 counties and and small counties. My idea was to split the counties into
 groups, according to population. Each group of counties has
-approximately the same
-population:
+approximately the same population:
 
 <img src="ijlyttle/03-Plots_files/figure-gfm/iowa-map-1.png" width="864" />
 
@@ -91,8 +88,7 @@ Essentially, a quarter of the state’s population lives in the two
 most-populous counties. Also, about a quarter of the state’s population
 lives in the sixty-or-so least-populous counties.
 
-This lets us compare counts among the different
-county-groups:
+This lets us compare counts among the different county-groups:
 
 <img src="ijlyttle/03-Plots_files/figure-gfm/iowa-proportions-1.png" width="864" />
 
@@ -102,8 +98,7 @@ account for a little more than half the deaths; I think this is due to
 the long-term care outbreaks, particularly in Linn County.
 
 Finally, I’d like to show the seven-day rolling average of new-cases,
-according to
-group:
+according to group:
 
 <img src="ijlyttle/03-Plots_files/figure-gfm/new-cases-group-1.png" width="864" />
 
@@ -124,8 +119,7 @@ care facilities, and hopsitals. We *all* have a role to play in reducing
 the spread.
 
 On April 27, Gov. Reynolds announced a partial re-opening of 77
-counties, effective May 1; here is how these groups of counties
-compare:
+counties, effective May 1; here is how these groups of counties compare:
 
 <img src="ijlyttle/03-Plots_files/figure-gfm/iowa-reopen-cases-1.png" width="864" />
 
