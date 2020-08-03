@@ -1,7 +1,7 @@
 Wrangling Data
 ================
 Ian Lyttle
-2020-08-02
+2020-08-03
 
 The purpose of this document is to wrangle the data into useful forms.
 We will write out two data frames: `iowa_counties` and
@@ -14,10 +14,10 @@ library("tidyverse")
 
     ## ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 
-    ## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
-    ## ✓ tibble  3.0.3     ✓ dplyr   1.0.1
-    ## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
-    ## ✓ readr   1.3.1     ✓ forcats 0.5.0
+    ## ✓ ggplot2 3.3.2          ✓ purrr   0.3.4     
+    ## ✓ tibble  3.0.3          ✓ dplyr   1.0.1     
+    ## ✓ tidyr   1.1.0          ✓ stringr 1.4.0     
+    ## ✓ readr   1.3.1.9000     ✓ forcats 0.5.0
 
     ## ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## x dplyr::filter() masks stats::filter()
@@ -196,20 +196,20 @@ iowa_counties <-
   print()
 ```
 
-    ## # A tibble: 12,076 x 9
+    ## # A tibble: 12,175 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-08-02 Polk    9658    202        49          2            82.6 
-    ##  2 2020-08-02 Woodb…  3632     49         2          0            11.1 
-    ##  3 2020-08-02 Black…  2987     62         3          0            19.6 
-    ##  4 2020-08-02 Linn    2067     87         3          0            34.4 
-    ##  5 2020-08-02 Johns…  1907     15         7          0            22.3 
-    ##  6 2020-08-02 Buena…  1783     12         0          0             1.14
-    ##  7 2020-08-02 Dallas  1780     35        13          0            15.7 
-    ##  8 2020-08-02 Scott   1576     12         0          0            13.3 
-    ##  9 2020-08-02 Dubuq…  1514     29        11          1            22.7 
-    ## 10 2020-08-02 Marsh…  1382     24         1          0            12   
-    ## # … with 12,066 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-08-03 Polk    9719    202        10          0            87.1 
+    ##  2 2020-08-03 Woodb…  3645     51         3          1            10.9 
+    ##  3 2020-08-03 Black…  2997     62         0          0            18.4 
+    ##  4 2020-08-03 Linn    2097     87         8          0            35.1 
+    ##  5 2020-08-03 Johns…  1922     15         4          0            22.3 
+    ##  6 2020-08-03 Dallas  1788     35         1          0            16.3 
+    ##  7 2020-08-03 Buena…  1784     12         0          0             1.14
+    ##  8 2020-08-03 Scott   1591     12         1          0            14.3 
+    ##  9 2020-08-03 Dubuq…  1536     29         9          0            24   
+    ## 10 2020-08-03 Marsh…  1384     24         1          0            10.6 
+    ## # … with 12,165 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 ## Write
