@@ -1,7 +1,7 @@
 COVID-19 Iowa
 ================
 Ian Lyttle
-2020-08-28
+2020-08-30
 
 ``` r
 library("fs")
@@ -62,20 +62,20 @@ iowa_counties <-
     ##   aggregation = col_character()
     ## )
 
-    ## # A tibble: 14,650 x 9
+    ## # A tibble: 14,848 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-08-28 Polk   12878    222        86          0           190.  
-    ##  2 2020-08-28 Woodb…  4037     56         9          0            19.3 
-    ##  3 2020-08-28 Black…  3664     73        23          0            25.3 
-    ##  4 2020-08-28 Johns…  3333     26       114          0           138.  
-    ##  5 2020-08-28 Linn    2889     93        18          0            26.9 
-    ##  6 2020-08-28 Dallas  2317     38        11          0            34.9 
-    ##  7 2020-08-28 Scott   2138     19        28          0            24   
-    ##  8 2020-08-28 Story   2129     16        50          0            85.4 
-    ##  9 2020-08-28 Dubuq…  1977     36        11          0            13.1 
-    ## 10 2020-08-28 Buena…  1822     12         0          0             1.57
-    ## # … with 14,640 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-08-30 Polk   13218    225        92          0           210.  
+    ##  2 2020-08-30 Woodb…  4100     56        10          0            21.4 
+    ##  3 2020-08-30 Black…  3762     74        34          0            35.6 
+    ##  4 2020-08-30 Johns…  3720     26       142          0           169.  
+    ##  5 2020-08-30 Linn    2960     94        30          0            30.7 
+    ##  6 2020-08-30 Dallas  2366     39        12          0            35.9 
+    ##  7 2020-08-30 Story   2342     16        54          0           110.  
+    ##  8 2020-08-30 Scott   2179     20        16          0            25.3 
+    ##  9 2020-08-30 Dubuq…  2024     36        15          0            17.3 
+    ## 10 2020-08-30 Buena…  1825     12         0          0             1.43
+    ## # … with 14,838 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 Let’s have a quick look at all the counties.
@@ -104,16 +104,16 @@ iowa_counties_current <-
     ## # A tibble: 99 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <chr>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-08-28 Polk   12878    222        86          0           190.  
-    ##  2 2020-08-28 Woodb…  4037     56         9          0            19.3 
-    ##  3 2020-08-28 Black…  3664     73        23          0            25.3 
-    ##  4 2020-08-28 Johns…  3333     26       114          0           138.  
-    ##  5 2020-08-28 Linn    2889     93        18          0            26.9 
-    ##  6 2020-08-28 Dallas  2317     38        11          0            34.9 
-    ##  7 2020-08-28 Scott   2138     19        28          0            24   
-    ##  8 2020-08-28 Story   2129     16        50          0            85.4 
-    ##  9 2020-08-28 Dubuq…  1977     36        11          0            13.1 
-    ## 10 2020-08-28 Buena…  1822     12         0          0             1.57
+    ##  1 2020-08-30 Polk   13218    225        92          0           210.  
+    ##  2 2020-08-30 Woodb…  4100     56        10          0            21.4 
+    ##  3 2020-08-30 Black…  3762     74        34          0            35.6 
+    ##  4 2020-08-30 Johns…  3720     26       142          0           169.  
+    ##  5 2020-08-30 Linn    2960     94        30          0            30.7 
+    ##  6 2020-08-30 Dallas  2366     39        12          0            35.9 
+    ##  7 2020-08-30 Story   2342     16        54          0           110.  
+    ##  8 2020-08-30 Scott   2179     20        16          0            25.3 
+    ##  9 2020-08-30 Dubuq…  2024     36        15          0            17.3 
+    ## 10 2020-08-30 Buena…  1825     12         0          0             1.43
     ## # … with 89 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
@@ -156,28 +156,28 @@ counties_large
 ```
 
     ##  [1] "Polk"          "Woodbury"      "Black Hawk"    "Johnson"      
-    ##  [5] "Linn"          "Dallas"        "Scott"         "Story"        
+    ##  [5] "Linn"          "Dallas"        "Story"         "Scott"        
     ##  [9] "Dubuque"       "Buena Vista"   "Marshall"      "Pottawattamie"
     ## [13] "Wapello"       "Webster"       "Muscatine"     "Sioux"        
     ## [17] "Crawford"      "Cerro Gordo"   "Clinton"       "Warren"       
     ## [21] "Plymouth"      "Tama"          "Jasper"        "Des Moines"   
-    ## [25] "Wright"        "Marion"        "Dickinson"     "Louisa"       
-    ## [29] "Lee"           "Carroll"       "Boone"         "Washington"   
+    ## [25] "Wright"        "Marion"        "Dickinson"     "Lee"          
+    ## [29] "Louisa"        "Carroll"       "Boone"         "Washington"   
     ## [33] "Franklin"      "Bremer"        "Hamilton"      "Henry"        
-    ## [37] "Clay"          "Clarke"        "Hardin"        "Emmet"        
-    ## [41] "Shelby"        "Floyd"         "Mahaska"       "Winneshiek"   
-    ## [45] "Jackson"       "Delaware"      "Benton"        "O'Brien"      
-    ## [49] "Butler"        "Poweshiek"     "Clayton"       "Buchanan"     
-    ## [53] "Allamakee"     "Guthrie"       "Jones"         "Madison"      
-    ## [57] "Winnebago"     "Humboldt"      "Hancock"       "Cedar"        
-    ## [61] "Harrison"      "Lyon"          "Fayette"       "Cherokee"     
-    ## [65] "Pocahontas"    "Mills"         "Howard"        "Grundy"       
-    ## [69] "Kossuth"       "Calhoun"       "Jefferson"     "Cass"         
-    ## [73] "Iowa"          "Palo Alto"     "Page"          "Taylor"       
-    ## [77] "Sac"           "Monona"        "Monroe"        "Chickasaw"    
-    ## [81] "Van Buren"     "Osceola"       "Mitchell"      "Union"        
-    ## [85] "Lucas"         "Davis"         "Worth"         "Appanoose"    
-    ## [89] "Montgomery"    "Fremont"       "Keokuk"        "Greene"
+    ## [37] "Clarke"        "Clay"          "Hardin"        "Emmet"        
+    ## [41] "Winneshiek"    "Shelby"        "Floyd"         "Mahaska"      
+    ## [45] "Delaware"      "Jackson"       "Benton"        "Butler"       
+    ## [49] "O'Brien"       "Poweshiek"     "Clayton"       "Allamakee"    
+    ## [53] "Buchanan"      "Guthrie"       "Jones"         "Madison"      
+    ## [57] "Winnebago"     "Hancock"       "Humboldt"      "Cedar"        
+    ## [61] "Lyon"          "Harrison"      "Cherokee"      "Fayette"      
+    ## [65] "Howard"        "Pocahontas"    "Mills"         "Grundy"       
+    ## [69] "Calhoun"       "Kossuth"       "Jefferson"     "Taylor"       
+    ## [73] "Sac"           "Palo Alto"     "Cass"          "Page"         
+    ## [77] "Iowa"          "Chickasaw"     "Monona"        "Mitchell"     
+    ## [81] "Monroe"        "Van Buren"     "Osceola"       "Union"        
+    ## [85] "Lucas"         "Appanoose"     "Davis"         "Worth"        
+    ## [89] "Montgomery"    "Keokuk"        "Fremont"       "Greene"
 
 In addition to compiliing the data for the counties with large numbers
 of cases, we also create aggregeted datasets that show:
@@ -207,20 +207,20 @@ iowa_total <-
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
-    ## # A tibble: 174 x 9
+    ## # A tibble: 176 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <fct>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-08-28 <NA>   62017   1091       545          0             957.
-    ##  2 2020-08-27 <NA>   61472   1091      2627         14             993.
-    ##  3 2020-08-26 <NA>   58845   1077      1252         18             758.
-    ##  4 2020-08-25 <NA>   57593   1059       677         13             676.
-    ##  5 2020-08-24 <NA>   56916   1046       487         10             631.
-    ##  6 2020-08-23 <NA>   56429   1036       448          3             612.
-    ##  7 2020-08-22 <NA>   55981   1033       662          3             598.
-    ##  8 2020-08-21 <NA>   55319   1030       796         14             612.
-    ##  9 2020-08-20 <NA>   54523   1016       986          6             582.
-    ## 10 2020-08-19 <NA>   53537   1010       675          8             538.
-    ## # … with 164 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-08-30 <NA>   64086   1110       654          1            1094.
+    ##  2 2020-08-29 <NA>   63432   1109       624          2            1064.
+    ##  3 2020-08-28 <NA>   62808   1107      1336         16            1070.
+    ##  4 2020-08-27 <NA>   61472   1091      2627         14             993.
+    ##  5 2020-08-26 <NA>   58845   1077      1252         18             758.
+    ##  6 2020-08-25 <NA>   57593   1059       677         13             676.
+    ##  7 2020-08-24 <NA>   56916   1046       487         10             631.
+    ##  8 2020-08-23 <NA>   56429   1036       448          3             612.
+    ##  9 2020-08-22 <NA>   55981   1033       662          3             598.
+    ## 10 2020-08-21 <NA>   55319   1030       796         14             612.
+    ## # … with 166 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 ``` r
@@ -244,20 +244,20 @@ iowa_remainder <-
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
-    ## # A tibble: 165 x 9
+    ## # A tibble: 167 x 9
     ##    date       county cases deaths new_cases new_deaths new_cases_week_…
     ##    <date>     <fct>  <dbl>  <dbl>     <dbl>      <dbl>            <dbl>
-    ##  1 2020-08-28 <NA>     262      5         1          0             6   
-    ##  2 2020-08-27 <NA>     261      5        17          0             6.29
-    ##  3 2020-08-26 <NA>     244      5         2          0             5.29
-    ##  4 2020-08-25 <NA>     242      5         3          0             5.29
-    ##  5 2020-08-24 <NA>     239      5        10          0             5.29
-    ##  6 2020-08-23 <NA>     229      5         2          0             4.57
-    ##  7 2020-08-22 <NA>     227      5         7          0             5   
-    ##  8 2020-08-21 <NA>     220      5         3          0             4.14
-    ##  9 2020-08-20 <NA>     217      5        10          0             4   
-    ## 10 2020-08-19 <NA>     207      5         2          0             3.71
-    ## # … with 155 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
+    ##  1 2020-08-30 <NA>     274      5         4          0             6.43
+    ##  2 2020-08-29 <NA>     270      5         4          0             6.14
+    ##  3 2020-08-28 <NA>     266      5         5          0             6.57
+    ##  4 2020-08-27 <NA>     261      5        17          0             6.29
+    ##  5 2020-08-26 <NA>     244      5         2          0             5.29
+    ##  6 2020-08-25 <NA>     242      5         3          0             5.29
+    ##  7 2020-08-24 <NA>     239      5        10          0             5.29
+    ##  8 2020-08-23 <NA>     229      5         2          0             4.57
+    ##  9 2020-08-22 <NA>     227      5         7          0             5   
+    ## 10 2020-08-21 <NA>     220      5         3          0             4.14
+    ## # … with 157 more rows, and 2 more variables: new_deaths_week_avg <dbl>,
     ## #   aggregation <chr>
 
 ``` r
@@ -702,10 +702,10 @@ iowa_counts <-
     ## # A tibble: 4 x 5
     ##   population_group counties population cases deaths
     ##   <chr>               <int>      <dbl> <dbl>  <dbl>
-    ## 1 large                   2     716867 15767    315
-    ## 2 mid-large               8     939505 21178    298
-    ## 3 mid-small              23     719312 12809    282
-    ## 4 small                  66     779386 12263    196
+    ## 1 large                   2     716867 16178    319
+    ## 2 mid-large               8     939505 22111    301
+    ## 3 mid-small              23     719312 13268    289
+    ## 4 small                  66     779386 12529    201
 
 ``` r
 vars_count <- c("counties", "population", "cases", "deaths")
@@ -728,20 +728,20 @@ iowa_counts_tall <-
     ##    <chr>            <fct>       <dbl>
     ##  1 large            counties        2
     ##  2 large            population 716867
-    ##  3 large            cases       15767
-    ##  4 large            deaths        315
+    ##  3 large            cases       16178
+    ##  4 large            deaths        319
     ##  5 mid-large        counties        8
     ##  6 mid-large        population 939505
-    ##  7 mid-large        cases       21178
-    ##  8 mid-large        deaths        298
+    ##  7 mid-large        cases       22111
+    ##  8 mid-large        deaths        301
     ##  9 mid-small        counties       23
     ## 10 mid-small        population 719312
-    ## 11 mid-small        cases       12809
-    ## 12 mid-small        deaths        282
+    ## 11 mid-small        cases       13268
+    ## 12 mid-small        deaths        289
     ## 13 small            counties       66
     ## 14 small            population 779386
-    ## 15 small            cases       12263
-    ## 16 small            deaths        196
+    ## 15 small            cases       12529
+    ## 16 small            deaths        201
 
 ``` r
 plot_iowa_proportions <-
